@@ -1,6 +1,6 @@
 # pulque.github.io
 
-My First Blog.
+My First Blog site.
 
 Powered by <a href="http://jekyllrb.com">Jekyll</a> ||
 Template from <a href="http://danhixon.github.io/">überduper</a> ||

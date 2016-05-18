@@ -8,6 +8,5 @@ future:      true
 lsi:         false
 
 highlighter: rouge
-highlighter: pygments
 
 port: 5001
