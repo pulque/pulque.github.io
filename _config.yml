@@ -1,0 +1,13 @@
+safe:        false
+
+source:      .
+destination: ./_site
+plugins_dir: ./_plugins
+
+future:      true
+lsi:         false
+
+highlighter: rouge
+highlighter: pygments
+
+port: 5001
