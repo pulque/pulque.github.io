@@ -1,5 +1,10 @@
 # pulque.github.io
+
 My First Blog.
+
+Powered by <a href="http://jekyllrb.com">Jekyll</a> ||
+    Template from <a href="http://danhixon.github.io/">überduper</a> ||
+    <a href="mailto:question@lizheblogs.com‍">question@lizheblogs.com‍</a>
 
 ## License
 
