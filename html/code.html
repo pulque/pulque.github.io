@@ -1,15 +1,14 @@
 ---
 layout: default
-title: Opinion in Norman's Tech Blog
+title: Code
 ---
 
 <div id="home">
-  <h2 class="green">opinion</h2>
+  <h2 class="pink">code</h2>
   <ul class="posts">
-    {% for post in site.categories.sth %}
+    {% for post in site.categories.code %}
       <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
   
 </div>
-
