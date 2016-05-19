@@ -129,6 +129,7 @@ h1 a:hover { color:#fba919 ;}
 .green { color: #23af4c; }
 .blue { color: #0383c9; }
 .orange { color: #fba919; }
+.white { color: #ffffff; }
 
 
 a.pink:hover { border: solid 2px #f5a2c6;padding:1px; text-decoration:none;  }
@@ -164,7 +165,6 @@ padding-bottom: 6px;
 }
 
 h3 {
-border-bottom:1px solid #e5e5e5;
 color:#fba919;
 font-size:1.4em;
 font-weight: 100;
@@ -175,6 +175,7 @@ padding:1px 2px 2px 3px;
 h4 {
 color: #23af4c;
 }
+
 /*** Main wrap and header ***/
 
 #wrap {
