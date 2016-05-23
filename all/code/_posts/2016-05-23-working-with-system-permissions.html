@@ -1,0 +1,48 @@
+---
+layout: default
+title: "Android 6.0 以上版本运行时权限申请"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">23 May 2016</p>
+
+<p>参考文档：<br><a target="_blank" href="https://developer.android.com/training/permissions/index.html">
+https://developer.android.com/training/permissions/index.html</a></p>
+<p>Demo地址：<br><a target="_blank" href="https://github.com/pulque/working-with-system-permissions">
+https://github.com/pulque/working-with-system-permissions</a></p>
+
+<p>
+基本流程：<br>
+1.检查所有需要申请的权限。<br>
+2.有需要申请的权限，去向申请。<br>
+3.申请不到弹框提示。<br>
+</p>
+
+
+使用方法：<br>
+1.在Activity中添加
+<pre>
+    private PermissionHelper permissionHelper;
+    public PermissionHelper getMPermission() {
+        if (permissionHelper == null)
+            permissionHelper = new PermissionHelper();
+        return permissionHelper;
+    }
+    @Override
+    public void onRequestPermissionsResult
+    (int requestCode, @NonNull String[] permissions, 
+                      @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult
+                         (requestCode, permissions, grantResults);
+        if (permissionHelper != null) {
+            permissionHelper.onRequestPermissionsResult
+            (this, requestCode, permissions, grantResults);
+        }
+    }
+</pre>
+2.申请权限：
+<pre>
+    PermissionHelper mPermission = getMPermission();
+    mPermission.checkPermission(所在Activity, 完成后回调, 需要申请权限的列表);
+</pre>
