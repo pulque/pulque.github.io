@@ -130,6 +130,7 @@ h1 a:hover { color:#fba919 ;}
 .blue { color: #0383c9; }
 .orange { color: #fba919; }
 .white { color: #ffffff; }
+.red { color: #FF7272; }
 
 
 a.pink:hover { border: solid 2px #f5a2c6;padding:1px; text-decoration:none;  }

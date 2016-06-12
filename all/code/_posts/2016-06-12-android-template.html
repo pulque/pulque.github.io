@@ -1,0 +1,77 @@
+---
+layout: default
+title: "Android Template - 项目模版"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">12 Jun 2016</p>
+
+<p>为以后能够快速新建Android应用项目做准备。</p>
+
+<p>
+最近，写了一个项目模版，可以稍微修改快速形成一个新的项目。<br>
+不管以后自己的小项目还是公司的，都可以使用它。<br>
+下面对这个项目做一个简单的介绍，以后根据经验的增长还会持续更新<br>
+项目地址：<a target="_blank" href="https://github.com/pulque/AndroidTemplate">
+			https://github.com/pulque/AndroidTemplate</a><br>
+也希望广大网友有好的意见或建议都可以通过邮件或分支告诉我。<br>
+邮箱地址：<a href="mailto:question@lizheblogs.com‍">question@lizheblogs.com‍</a>
+</p>
+
+<P>
+<span class="green">模版环境</span><br>
+
+Android Studio 2.1.2<br>
+compileSdkVersion 23<br>
+buildToolsVersion "23.0.3"<br>
+classpath 'com.android.tools.build:gradle:2.1.2'<br>
+</P>
+
+<P>
+<span class="green">添加的基本模块</span><br>
+
+MVP模式（Model-View-Presenter architecture）<br>
+Volley库（基于JSON的网络连接）<br>
+Crash捕获并发邮件<br>
+Picasso图片管理库<br>
+SubLog日志管理<br>
+Flavors多渠道打包APK<br>
+BuildTypes自定义key打包和APK文件重命名<br>
+</P>
+
+<P>
+<span class="red">遇到的问题</span><br>
+设置代码混淆后不能正常编译，根据日志提示需要添加编译设置。<br>
+在proguard-rules.pro文件中：
+<pre>
+	-dontwarn java.awt.**
+	-dontwarn com.squareup.okhttp.**
+	-dontwarn javax.security.sasl.**
+	...
+
+	-keepattributes Signature
+	-keepattributes InnerClasses
+
+	-dontnote android.net.http.SslCertificate
+	-dontnote android.net.http.SslError
+	...
+</pre>
+代码混淆在app/build.gradle -> buildTypes ->  minifyEnabled true
+</P>
+
+<P>
+<span class="red">注意</span><br>
+Crash邮件发送和接收地址，需要根据自己项目实际需要自行设定。<br>
+修改包com.lizheblogs.android.template.util.email下<br>
+EmailSender<br>
+private String mailhost = "smtp.XXXXXX.com";<br>
+EmailUtils<br>
+private static final String EMAIL_ADDRESS = "crash@XXXXXX.com";<br>
+private static final String PWD = "password";<br>
+private static final String RECEIVE_CRASH = "receivecrash@XXXXXX.com";<br>
+</P>
+
+<p>参考：<br>
+<a target="_blank" href="https://github.com/googlesamples/android-architecture">
+https://github.com/googlesamples/android-architecture</a><br></p>
