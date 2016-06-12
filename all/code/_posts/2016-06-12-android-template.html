@@ -44,7 +44,7 @@ BuildTypes自定义key打包和APK文件重命名<br>
 
 <P>
 <span class="red">遇到的问题</span><br>
-设置代码混淆后不能正常编译，根据日志提示需要添加编译设置。<br>
+1.设置代码混淆后不能正常编译，根据日志提示需要添加编译设置。<br>
 在proguard-rules.pro文件中：
 <pre>
 	-dontwarn java.awt.**
@@ -59,7 +59,11 @@ BuildTypes自定义key打包和APK文件重命名<br>
 	-dontnote android.net.http.SslError
 	...
 </pre>
-代码混淆在app/build.gradle -> buildTypes ->  minifyEnabled true
+代码混淆在app/build.gradle -> buildTypes ->  minifyEnabled true<br><br>
+2.更新Volley困难
+国内访问Volley有问题，自己建了个仓库来保存，<br>有需要的可以下载：
+<a target="_blank" href="https://github.com/pulque/Volley">
+https://github.com/pulque/Volley</a><br>
 </P>
 
 <P>
