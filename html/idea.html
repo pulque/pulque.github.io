@@ -1,12 +1,12 @@
 ---
 layout: default
-title: App
+title: Idea
 ---
 
 <div id="home">
-  <h2 class="green">app</h2>
+  <h2 class="green">idea</h2>
   <ul class="posts">
-    {% for post in site.categories.app %}
+    {% for post in site.categories.idea %}
       <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
