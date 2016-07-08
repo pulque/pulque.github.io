@@ -1,0 +1,44 @@
+---
+layout: default
+title: "Android中JavaScript相互调用"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">8 July 2016</p>
+
+<p>记录一下，以后忘了怎么写就可以看看。<br>
+我现在有几个项目有WebVIew的都在用</p>
+
+<h3>1.JS调用Android的方法</h3>
+<pre>
+Android:
+webSettings.setJavaScriptEnabled(true);
+webView.addJavascriptInterface(jsInterface, "jsInterface");
+public class JsInterface {
+    @JavascriptInterface
+    public void openLink(String url) {
+        //......
+    }
+}
+
+Web:
+&lt;body onload="javascript:jsInterface.openLink('')"&gt;
+jsInterface：Object name 
+openLink name 
+Parameter (if string need '')
+</pre>
+<h3>2.Android的方法调用JS</h3>
+<pre>
+Android:
+mWebView.loadUrl("javascript:clickTwoButton(" + index + ")");
+
+Web:
+function clickTwoButton(data)
+{
+    //......
+}
+clickTwoButton：Method name in js
+data：Parameter（new all of integer）
+</pre>
+
