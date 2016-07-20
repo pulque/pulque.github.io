@@ -1,0 +1,142 @@
+---
+layout: default
+title: "Glide图片加载库"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">20 Jul 2016</p>
+
+<p>之所以更换Glide而不用Picasso，是因为Glide支持GIF动态图片。</p>
+
+<p>下面简单介绍下Glide的使用。（基于Android Studio）</p>
+
+<p>
+<h4>依赖</h4>
+<pre>
+dependencies {
+    compile 'com.github.bumptech.glide:glide:3.5.2'
+    compile 'com.android.support:support-v4:22.0.0'
+}
+</pre>
+<h4>加载一般图片</h4>
+<pre>
+public static void loadImage(
+                   Context context, String url, ImageView mImageView) {
+        if (context == null || TextUtils.isEmpty(url) 
+                            || mImageView == null) {
+            return;
+        }
+        String oldTag = (String) mImageView.getTag(R.id.glide_tag_id);
+        if (TextUtils.isEmpty(oldTag) || !oldTag.equalsIgnoreCase(url)) {
+            mImageView.setTag(R.id.glide_tag_id, url);
+            Glide.with(context).load(url)
+                    .diskCacheStrategy(DISK_CACHE_STRATEGY)
+                    .fitCenter()
+                    .placeholder(E_CARD_BG)
+                    .dontAnimate()
+                    .into(mImageView);
+        }
+    }
+</pre>
+Glide.with支持Context、Activity、FragmentActivity、Fragment，最好选用有生命周期的对象。<br>
+mImageView.setTag是为了防止多次加载相同图片的时候闪烁。<br>
+缓存类型DISK_CACHE_STRATEGY为：<br>
+<pre>
+DiskCacheStrategy DISK_CACHE_STRATEGY = DiskCacheStrategy.SOURCE;
+</pre>
+在res-values-ids.xml里glide_tag_id为：<br>
+<pre>
+&lt;item name="glide_tag_id" type="id" /&gt;
+</pre>
+<h4>加载圆形图片</h4>
+需要添加属性：<br>
+<pre>
+.transform(new GlideCircleTransform(context, isHaveBorder))
+</pre>
+GlideCircleTransform为自定义对象，继承BitmapTransformation。<br>
+<pre>
+public class GlideCircleTransform extends BitmapTransformation {
+
+    public GlideCircleTransform(Context context) {
+        super(context);
+       
+    }
+
+    @Override
+    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, 
+                               int outWidth, int outHeight) {
+        return circleCrop(pool, toTransform);
+    }
+
+    private Bitmap circleCrop(BitmapPool pool, Bitmap source) {
+        if (source == null) return null;
+
+        int size = Math.min(source.getWidth(), source.getHeight());
+        int x = (source.getWidth() - size) / 2;
+        int y = (source.getHeight() - size) / 2;
+        // TODO this could be acquired from the pool too
+        Bitmap squared = Bitmap.createBitmap(source, x, y, size, size);
+
+        Bitmap result = pool.get(size, size, Bitmap.Config.ARGB_4444);
+        if (result == null) {
+            result = Bitmap.createBitmap(
+                            size, size, Bitmap.Config.ARGB_4444);
+        }
+
+        Canvas canvas = new Canvas(result);
+        canvas.setDrawFilter(
+               new PaintFlagsDrawFilter(
+                   0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
+        Paint paint = new Paint();
+        paint.setShader(
+              new BitmapShader(
+                  squared, BitmapShader.TileMode.CLAMP, 
+                  BitmapShader.TileMode.CLAMP));
+        paint.setAntiAlias(true);
+        float r = size / 2f;
+        canvas.drawCircle(r, r, r, paint);
+        
+        return result;
+    }
+
+    @Override
+    public String getId() {
+        return getClass().getName();
+    }
+}
+</pre>
+对canvas进行修改，就能达到你想要的效果。<br><br>
+<h4>清理缓存</h4>
+清除<span class="orange">物理缓存</span>需要在<span class="orange">非主线程</span>上进行。<br>
+清除<span class="orange">内存缓存</span>需要在<span class="orange">主线程</span>上进行。<br>
+<pre>
+public static void clearCache(Context context) {
+        if (context != null) {
+            final Glide mGlide = Glide.get(context);
+            if (mGlide != null) {
+                mGlide.clearMemory();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mGlide.clearDiskCache();
+                    }
+                }).start();
+            }
+
+        }
+    }
+
+    public static void clearMemoryCache(Context context) {
+        if (context != null) {
+            Glide mGlide = Glide.get(context);
+            if (mGlide != null) {
+                mGlide.clearMemory();
+            }
+        }
+    }
+</pre>
+
+<p>参考文献：<br>
+<a target="_blank" href="https://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en">
+https://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en</a>
