@@ -1,0 +1,108 @@
+---
+layout: default
+title: "Android Animation with Code - 代码实现动画"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">1 Aug 2016</p>
+
+<p>这是个模板框架，通过编写代码来实现动画效果。</p>
+项目地址：<br>
+<a target="_blank" href="https://github.com/pulque/AnimationCode">
+			https://github.com/pulque/AnimationCode</a><br>
+
+<h4>1.实现效果</h4>
+通过模板实现下雨和纸片掉落的效果。
+
+<h4>2.基本方式</h4>
+—Atom为基本元素，即下雨效果的一个雨滴，实现类为RainItem。<br>
+—Molecuar为雨滴的一个集合，放在Scene里边，实现类为RainScene。<br>
+—SupWidget为一个场景，把Scene画到这里，实现类为RainView。
+
+<h4>3.模板优点</h4>
+—尽可能的把各个元素分开，灵活掌握。<br>
+—使用SurfaceView，能够用双缓冲画布使动画更流畅。<br>
+—运用自定义view的方式，使用在XML里更方便。<br>
+—添加了一些控制方法，使用起来更灵活。
+
+<h4>4.使用修改</h4>
+实现Atom类，并重写draw、move、reset方法。<br>
+—draw：画你想画的元素。<br>
+—move：计算这次或下次的元素位置、大小等参数，并判断是否重置或出局。<br>
+—reset：重置你的所有变量。<br>
+<br>
+实现Molecular类，重写initScene方法。<br>
+—initScene：根据itemNum的数量，添加你的Atom到list里。<br>
+<br>
+实现SupWidget类，重写initScene方法。<br>
+—initScene：返回你的scene。
+
+<h4>5.修改自定义View的参数（可选）</h4>
+主要修改SupWidget和attrs.xml。<br>
+<br>
+
+位置：<br>
+—com.lizheblogs.android.animationcode.view.animation.base.SupWidget<br>
+—/res/values/attrs.xml<br>
+<br>
+
+修改attrs.xml代码：<br>
+<pre>
+&lt;declare-styleable name="Molecular"&gt;
+        &lt;attr name="itemNum" format="integer" /&gt;
+        &lt;attr name="itemColor" format="color" /&gt;
+        &lt;attr name="randColor" format="boolean" /&gt;
+        &lt;attr name="MBackground" format="color" /&gt;
+        &lt;attr name="MDelayStop" format="integer" /&gt;
+&lt;/declare-styleable&gt;
+</pre>
+说明：<br>
+Molecular为集合名字，里边是参数名字和类型。<br>
+<br>
+
+修改SupWidget代码：<br>
+<pre>
+if (attrs != null) {
+    TypedArray a = 
+    	context.obtainStyledAttributes(attrs, R.styleable.Molecular);
+    itemNum = a.getInt(R.styleable.Molecular_itemNum, 0);
+    itemColor = a.getColor(R.styleable.Molecular_itemColor, 0xff000000);
+    randColor = a.getBoolean(R.styleable.Molecular_randColor, false);
+    bgColor = a.getColor(R.styleable.Molecular_MBackground, -1);
+    delayStop = a.getInt(R.styleable.Molecular_MDelayStop, -1);
+    a.recycle();
+ }
+ </pre>
+说明：<br>
+获取XML中定义的参数，注意获取的时候是集合名字+下划线+参数名字，例如R.styleable.Molecular_itemColor。<br>
+<br>
+
+XML中使用：<br>
+<pre>
+&lt;com.lizheblogs.android.animationcode.view.animation.widget.AllView
+       android:id="@+id/surface"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       molecular:itemNum="300"
+       molecular:randColor="true" /&gt;
+</pre>
+注意：父布局或根布局中要添加：<br>
+xmlns:molecular="http://schemas.android.com/apk/res-auto"<br>
+<br>
+
+<h4>6.总结：</h4>
+经过几天的努力还是搞定了动画，还有布局透明，也学习到了很多东西。<br>
+其间也遇到了点问题，现整理一下。<br>
+<br>
+—surface view的父布或本身局添加padding或者margin都会使动画无效。<br>
+—线程空循环时候，如果没有代码走，最好sleep点间隔，要不app会卡掉。<br>
+—研究纸片下落的算法花了些时间，大概有点样子。觉得算法很重要。<br>
+—角度和弧度直接的变换在Math.toRadians和Math.toDegrees()中就可以找到。<br>
+—对Random有更深的了解。<br>
+—学会了自定义View。<br>
+—了解了&lt;&lt;的使用，color = alpha << 24 | r << 16 | g << 8 | b;<br>
+—方法中，觉得延时结束和一点点结束挺有意思的。<br>
+<br>
+接下来有空研究下使用xml进行动画编码。<br>
+<br>
