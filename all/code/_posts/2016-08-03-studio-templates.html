@@ -1,0 +1,60 @@
+---
+layout: default
+title: "Android Studio Code Postfix- 代码补全"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">4 Aug 2016</p>
+
+<p>
+看Google I/O和一些编码视频，发现他们编码好快，<br>
+就敲几个字母就可以显示出很多的代码。<br>
+很方便，其实就是代码补全。
+</p>
+
+<p>
+查了些资料后，下面做写总结，以备查阅。
+</p>
+<p>
+Android Studio<br>
+Settings - Editor - General - Postfix Completion<br>
+这个不能更改。对象可以点出来的。<br>
+Settings - Editor - Live Templates<br>
+可以编辑，添加自己喜欢的代码风格。直接输入简码就可以得到。<br>
+</p>
+下面罗列些比较常用的，以备查看。<br><br>
+
+<h4>Postfix Completion:</h4>
+<span class="orange">boolean.else</span> if(!boolean )<br>
+<span class="orange">boolean.if</span> if(boolean )<br>
+<span class="orange">object.field</span> 全局变量<br>
+<span class="orange">数组.for</span> foreach<br>
+<span class="orange">数组.fori</span> 默认i为变量的for循环++<br>
+<span class="orange">数组.forr</span> 默认i为变量的for循环--<br>
+<span class="orange">Object.inst</span> o instanceof  ? (() o) : null;<br>
+<span class="orange">Object.nn</span> if (Object != null){<br>
+<span class="orange">Object.null</span> if (Object == null){<br>
+<span class="orange">Object.return</span> return Object;<br>
+<span class="orange">integer.switch</span> switch (integer) {<br>
+<span class="orange">Object.try</span> trycatch<br>
+
+<h4>Live Templates:</h4>
+<span class="orange">const</span> private static final int $name$ = $value$;<br>
+<span class="orange">fbc</span> ($cast$) findViewById(R.id.$resId$);<br>
+<span class="orange">gone</span> $VIEW$.setVisibility(android.view.View.GONE);<br>
+<span class="orange">key</span> private static final String KEY_$value$ = "$value$";<br>
+<span class="orange">Sfmt</span> String.format("$string$", $params$);<br>
+<span class="orange">Toast</span><br>
+android.widget.Toast.makeText($className$.this, "$text$", Toast.LENGTH_SHORT).show();<br>
+<span class="orange">psf</span> public static final<br>
+<br>
+
+下边是我自己加的：<br>
+tne<br>
+<pre>
+if(!android.text.TextUtils.isEmpty($string$)){
+  $END$
+}
+</pre>
+类似这种的，自己可以添加自己常用的代码，方便自己开发。<br><br>
