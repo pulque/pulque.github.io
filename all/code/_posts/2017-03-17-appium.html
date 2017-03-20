@@ -1,0 +1,151 @@
+---
+layout: default
+title: "自动化测试框架Appium研究"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">17 Mar 2017</p>
+
+<p>
+最近研究了Appium，一种自动化测试框架，测试一般的软件还是很有用的，<br>
+期间也发现一些问题，期待完善。<br>
+问题：<br>
+1.延迟方法不是很好用，看了网上的三种方式，都不是很好用。<br>
+2.不是很稳定，有时候找不到控件报错。
+</p>
+<p>
+什么是Appium？<br>
+1，appium是开源的移动端自动化测试框架；<br>
+2，appium可以测试原生的、混合的、以及移动端的web项目；<br>
+3，appium可以测试ios，android和firefox os的应用；<br>
+4，appium是跨平台的，可以用在osx，windows以及linux桌面系统上；
+</p>
+<p>
+查了些资料后，下面做写总结，以备查阅。
+</p>
+
+<h3>一、原理介绍</h3>
+<p>
+Appium框架中包含三个部分，客户端、服务端、被测软件。<br>
+客户端：编写测试代码（支持多种语言）。<br>
+服务端：接收客户端http请求，转换成统一指令。<br>
+被测软件：执行对应指令操作。<br>
+<br>
+平台测试指令：<br>
+OS: Apple’s UIAutomation<br>
+Android 4.2+: Google’s UiAutomator<br>
+Android 2.3+: Google’s Instrumentation.<br>
+<br>
+我研究的DEMO对应为：<br>
+客户端：Eclipse（Maven java Project）<br>
+服务端：Appium server<br>
+被测软件：Android studio<br>
+</p>
+
+<h3>二、环境配置</h3>
+<p>
+1.Android studio<br>
+<a target="_blank" href="https://developer.android.com/studio/index.html">
+			https://developer.android.com/studio/index.html</a><br>
+2.Eclipse（Maven Project）<br>
+类型：Eclipse IDE for Java Developers<br>
+<a target="_blank" href="https://www.eclipse.org/downloads/eclipse-packages/">
+			https://www.eclipse.org/downloads/eclipse-packages/</a><br>
+3.Appium server<br>
+<a target="_blank" href="http://appium.io/downloads.html">
+			http://appium.io/downloads.html</a><br>
+</p>
+<h3>三、代码编写</h3>
+<h4>1.在Eclipse中新建Maven项目</h4>
+<img src="/images/blogs/code/2017-03-17-appium/maven_project.png" width="512" alt="New a maven project"/>
+在项目根目录下新建apps文件夹，然后把要测试的软件包放在目录下。
+<h4>2.修改项目文件pom.xml</h4>
+<pre>
+&lt;dependency&gt;
+	&lt;groupId&gt;io.appium&lt;/groupId&gt;
+	&lt;artifactId&gt;java-client&lt;/artifactId&gt;
+	&lt;version&gt;5.0.0-BETA5&lt;/version&gt;
+&lt;/dependency&gt;
+</pre>
+在Appium Client Libraries中<br>
+查询最新仓库：（我选的是java）<br>
+<a target="_blank" href="http://appium.io/downloads.html">
+			http://appium.io/downloads.html</a><br>
+<h4>3.在src/test/java/{包名}/下新建测试文件</h4>
+<pre>
+File classpathRoot = new File(System.getProperty("user.dir"));
+//测试文件目录
+File appDir = new File(classpathRoot, "apps");
+//被测试软件
+File app = new File(appDir, "base.apk");
+DesiredCapabilities capabilities = new DesiredCapabilities();
+//模拟器或真机名字
+capabilities.setCapability("deviceName", "T8DDU15303001806");
+//平台版本
+capabilities.setCapability("platformVersion", "6.0");
+capabilities.setCapability("app", app.getAbsolutePath());
+//被测试软件包名
+capabilities.setCapability("appPackage", "com.pulque.idcard");
+//要启动的Activity
+capabilities.setCapability("appActivity", ".IDCardActivity");
+//通信地址（需跟服务器配置相匹配，一般不改）
+driver = new AndroidDriver<>(new URL("http://127.0.0.1:4723/wd/hub"),
+ capabilities);
+</pre>
+准备工作做好以后，开始编写测试代码。<br>
+<pre>
+//输入点击事件
+//控件ID的获取通过
+//在DDMS视图下，使用Dump view UI hierarchy for Automator
+driver.findElementById("com.pulque.idcard:id/Bt_4").click();
+//获取输入框控件，核对输入是否正确
+WebElement el = driver.findElementById("com.pulque.idcard:id/enterET");
+assertEquals("411722197508214014", el.getText());
+//删除输入
+WebElement el_del=driver.findElementById("com.pulque.idcard:id/Bt_delete");
+for (int i = 0; i < 18; i++) {
+	el_del.click();
+}
+//核对是否正确
+System.out.println(el.getText());
+assertEquals("18位中国身份证号码", el.getText());
+</pre>
+测试结束后<br>
+<pre>
+driver.quit();
+</pre>
+<h4>4.启动服务器</h4>
+<img src="/images/blogs/code/2017-03-17-appium/appium_server.png" width="512" alt="Start server"/>
+<h4>5.运行测试代码</h4>
+
+
+<h3>四、参考资料</h3>
+官网：<br>
+<a target="_blank" href="http://appium.io/">
+			http://appium.io/</a><br>
+测试Demo：<br>
+<a target="_blank" href="https://github.com/pulque/AppiumTest">
+			https://github.com/pulque/AppiumTest</a><br>
+项目参考：<br>
+<a target="_blank" href="http://www.bilibili.com/video/av1731133/">
+			http://www.bilibili.com/video/av1731133/</a><br>
+<a target="_blank" href="https://my.oschina.net/outcat/blog/491529">
+			https://my.oschina.net/outcat/blog/491529</a><br>
+<a target="_blank" href="https://testerhome.com/topics/1045">
+			https://testerhome.com/topics/1045</a><br>
+控件ID获取教程：<br>
+<a target="_blank" href="http://www.it610.com/article/1799448.htm">
+			http://www.it610.com/article/1799448.htm</a><br>
+<br>
+<h3>五、后续思考</h3>
+我想应该可以在Android studio下直接编写测试代码的，<br>
+因为Android studio支持Junit和Maven，<br>
+这样就不用单独下载Eclipse了。<br>
+事实证明是可以的，详细参考：<br>
+<a target="_blank" href="http://bitbar.com/appium-tip-20-executing-appium-tests-with-gradle/">
+			http://bitbar.com/appium-tip-20-executing-appium-tests-with-gradle/</a><br>
+实践证明还是有很多问题的，最终放弃了。<br>
+报错Caused by: java.lang.ClassNotFoundException: org.apache.http.auth.Credentials<br>
+还有一点就是可能要加很多与项目无关的jar包，最后想了下还是分开比较好一点。<br>
+<br>
