@@ -23,10 +23,11 @@ title: "Android-代码混淆"
 在项目的Module的build.gradle中添加<br>
 <pre>
 buildTypes {
-	release {
-	    minifyEnabled true
-	    proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-	}
+release {
+    minifyEnabled true
+    proguardFiles getDefaultProguardFile('proguard-android.txt'), 
+    'proguard-rules.pro'
+}
 }
 </pre>
 注意：proguard-rules.pro文件要在同级目录下。<br>
