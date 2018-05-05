@@ -1,0 +1,164 @@
+---
+layout: default
+title: "Android-代码混淆"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">5 May 2017</p>
+
+最近做了个新项目，闲暇之余决定搞下代码混淆，<br>
+试过之后觉得挺好的，缩减了包的大小，还能防破解。<br>
+之前试过，但是，一直报错，就放弃了。<br>
+可能是老项目，关联和引用的包和项目有点多。<br>
+本文并未涉及资源压缩，只是代码混淆。<br>
+资源压缩还有待进一步研究后，再写总结。<br>
+<br>
+
+官方文档：压缩代码和资源<br>
+<a target="_blank" href="https://developer.android.com/studio/build/shrink-code?hl=zh-CN">
+			https://developer.android.com/studio/build/shrink-code?hl=zh-CN</a><br>
+
+<h4>第一步，添加配置</h4>
+在项目的Module的build.gradle中添加<br>
+<pre>
+buildTypes {
+	release {
+	    minifyEnabled true
+	    proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+	}
+}
+</pre>
+注意：proguard-rules.pro文件要在同级目录下。<br>
+
+<h4>第二步，基本配置代码</h4>
+添加一些基本的混淆代码到proguard-rules.pro文件中<br>
+<pre>
+# 设置混淆的压缩比率 0 ~ 7
+-optimizationpasses 5
+# 混淆后类名都为小写   Aa aA
+-dontusemixedcaseclassnames
+# 指定不去忽略非公共库的类
+-dontskipnonpubliclibraryclasses
+#不做预校验的操作
+-dontpreverify
+# 混淆时不记录日志
+-verbose
+# 混淆采用的算法.
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+#保留代码行号，方便异常信息的追踪
+-keepattributes SourceFile,LineNumberTable
+
+#dump文件列出apk包内所有class的内部结构
+-dump class_files.txt
+#seeds.txt文件列出未混淆的类和成员
+-printseeds seeds.txt
+#usage.txt文件列出从apk中删除的代码
+-printusage unused.txt
+#mapping文件列出混淆前后的映射
+-printmapping mapping.txt
+
+#避免混淆Android基本组件，下面是兼容性比较高的规则：
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class com.android.vending.licensing.ILicensingService
+
+#不提示V4包下错误警告
+-dontwarn android.support.v4.**
+#保持下面的V4兼容包的类不被混淆
+-keep class android.support.v4.**{*;}
+
+#避免混淆所有native的方法,涉及到C、C++
+-keepclasseswithmembernames class * {
+        native <methods>;
+}
+
+#避免混淆自定义控件类的get/set方法和构造函数
+-keep public class * extends android.view.View{
+        *** get*();
+        void set*(***);
+        public <init>(android.content.Context);
+        public <init>(android.content.Context, android.util.AttributeSet);
+        public <init>(android.content.Context, android.util.AttributeSet,int);
+}
+
+#避免混淆枚举类
+-keepclassmembers enum * {
+        public static **[] values();
+        public static ** valueOf(java.lang.String);
+}
+
+#避免混淆序列化类
+#不混淆Parcelable和它的实现子类，还有Creator成员变量
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+#不混淆Serializable和它的实现子类、其成员变量
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+
+#使用GSON、fastjson等框架时，所写的JSON对象类不混淆，否则无法将JSON解析成对应的对象
+-keepclassmembers class * {
+    public <init>(org.json.JSONObject);
+}
+
+# ===============百度定位 start====================
+-keep class vi.com.gdi.** { *; }
+-keep public class com.baidu.** {*;}
+-keep public class com.mobclick.** {*;}
+-dontwarn com.baidu.mapapi.utils.*
+-dontwarn com.baidu.platform.comapi.b.*
+-dontwarn com.baidu.platform.comapi.map.*
+# ===============百度定位 end======================
+
+#不混淆泛型
+-keepattributes Signature
+
+#避免混淆注解类
+-dontwarn android.annotation
+-keepattributes *Annotation*
+
+#避免混淆内部类
+-keepattributes InnerClasses
+</pre>
+有注释，我就不过多解释了。<br>
+
+<h4>第三步，添加本项目中避免混淆的路径</h4>
+首相，对于不同的引用包，去官网上看看有没有代码，直接copy过来就好了。<br>
+例如：GreenDao的引用，官方代码：<br>
+<pre>
+# ===============greendao start====================
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+public static java.lang.String TABLENAME;
+}
+-keep class **$Properties
+
+# If you do not use SQLCipher:
+-dontwarn org.greenrobot.greendao.database.**
+# If you do not use Rx:
+-dontwarn rx.**
+# ===============greendao end======================
+</pre>
+其次看看在编译的时候有哪些包报错，尝试不混淆。<br>
+还有项目用到的Bean对象，不要混淆。<br>
+因为Gson解析会出错。<br>
+
+<h4>最后就是混淆后一定要测试所有功能！</h4>
+因为不定哪里就因为找不到对象，或者解析不了而崩溃。<br>
+这就是为什么我不想在老项目中添加。<br>
+<br>
+后续再试试资源压缩，看看效果怎么样。<br>
+<br>
+<br>
