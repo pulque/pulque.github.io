@@ -8,50 +8,72 @@ title: "Android-模块化架构研究"
 <p class="publish_date">1 Aug 2018</p>
 
 <br>
-
-<h1>MultModuleDemo</h1>
-
 <p><strong>本项目研究功能模块化APP架构，基于Android系统。</strong></p>
-
-<h2>主要内容</h2>
-
-<blockquote><h4>开发痛点</h4><h4>设计理念</h4><h4>应用环境</h4><h4>原理</h4><h4>需要注意</h4><h4>存在的疑问</h4></blockquote>
-
-<h2>正文</h2>
-
-<h3>1. 开发痛点</h3>
-
-<p>传统开发理念是判断权限值来判定功能模块是否可以使用，所有用到用不到的模块都打包在APP中，<br/>并且启动应用的时候，初始化了很多不必要的功能模块。<br/>这样就导致<strong>APP安装包很大，运行慢，内存占用高</strong>。  </p>
-
-<p>私有化定制功能的时候，一般会复制代码单独修改维护，或者在代码中添加标识，判断定制修改。<br/><strong>增加代码逻辑复杂性，后期维护成本高，升级困难</strong>。  </p>
-
-<p>编写新APP软件的时候，老APP软件的功能只能通过拷贝代码来实现功能的迁移。<br/><strong>迁移容易出错，同时维护多套相同代码，更新相同功能困难</strong>。  </p>
-
-<h3>2. 设计理念</h3>
-
-<p>针对功能模块化，使之在最大程度上进行复用。
-类似七巧板，每一个板块想象成一个功能模块，板块拼凑成的图案即为APP。<br/>实际上就是将功能的复用提高到应用层级上来整合APP。</p>
-
-<h3>3. 应用环境</h3>
-
-<p>一家软件公司可能有好几款应用软件，一般都会有相同的登录验证方式，相同的广告展示等等。<br/>资源管理型软件，针对不同的角色，会有不同的功能模块显示。</p>
-
-<h3>4. 原理</h3>
-
-<h6>基本原理：</h6>
-
-<p>每个功能模块设计为Module（模型），作为项目中的Library（库）。
-而APP的Module只是集成各个功能模块，从而形成可编译的应用软件。</p>
-
-<h6>项目举例说明：</h6>
-
-<p>以通用的进销存软件为例，进行详细说明。
-以下是功能设计图：<br/><img alt="功能设计图" src="https://github.com/pulque/MultModuleDemo/blob/master/images/functions.png?raw=true"/><br/>从上图可以看出，不同的功能模块通过组合，可以形成不同的APP。<br/>以下是项目代码的截图：<br/><img alt="代码结构图" src="https://github.com/pulque/MultModuleDemo/blob/master/images/project_structure.png?raw=true"/><br/>以下是编译安装后APP的截图：<br/><img alt="手机APP展示图" src="https://github.com/pulque/MultModuleDemo/blob/master/images/apps.png?raw=true"/><br/>这样新开发APP就比较简单了，只要添加依赖，就可以显示不同的功能。<br/>当然权限还是需要标识来控制。</p>
-
-<h3>5. 需要注意</h3>
-
-<blockquote><ul><li>各个Module中的包名不能相同。  </li><li>XML资源名字不能相同。  </li><li>通过判断Activity名字来实现打开模块或指定页面。<br/>详细参考LoginActivity类的attemptLogin方法</li><li>各个Module中的Activity不能设置为启动页，<br/>否则安装后会显示多个相同APP。</li></ul></blockquote>
-
-<h3>6. 存在的疑问</h3>
-
-<blockquote><ul><li>是不是功能拆分的太细了？</li><li>随着需求的不断变化，Module会不会很多？</li><li>依赖升级build.gradle会不会很多，难以维护？</li><li>交叉依赖越来越多，会不会影响APP编译？</li><li>更改一个多APP引用的Module，能保证所有APP都能正常使用？</li><li>经常在各个Module中穿插编写代码，会不会对开发效率产生影响？</li></ul></blockquote>
+代码下载地址：<br>
+<a target="_blank" href="https://github.com/pulque/MultModuleDemo">
+			https://github.com/pulque/MultModuleDemo</a><br>
+<br>
+<h3> 主要内容 </h3>
+<blockquote>
+<h4>1.开发痛点</h4>
+<h4>2.设计理念</h4>
+<h4>3.应用环境</h4>
+<h4>4.原理</h4>
+<h4>5.需要注意</h4>
+<h4>6.存在的疑问</h4>
+</blockquote>
+<br>
+<h3> 正文 </h3>
+<h4> 1. 开发痛点 </h4>
+传统开发理念是判断权限值来判定功能模块是否可以使用，所有用到用不到的模块都打包在APP中，  <br>
+并且启动应用的时候，初始化了很多不必要的功能模块。 <br> 
+这样就导致<strong>APP安装包很大，运行慢，内存占用高</strong>。  <br>
+  <br>
+私有化定制功能的时候，一般会复制代码单独修改维护，或者在代码中添加标识，判断定制修改。<br>  
+<strong>增加代码逻辑复杂性，后期维护成本高，升级困难</strong>。<br>  
+  <br>
+编写新APP软件的时候，老APP软件的功能只能通过拷贝代码来实现功能的迁移。<br>  
+<strong>迁移容易出错，同时维护多套相同代码，更新相同功能困难</strong>。<br>  
+<br>
+<h4> 2. 设计理念 </h4>
+针对功能模块化，使之在最大程度上进行复用。<br>
+类似七巧板，每一个板块想象成一个功能模块，板块拼凑成的图案即为APP。 <br> 
+实际上就是将功能的复用提高到应用层级上来整合APP。<br>
+<h4> 3. 应用环境 </h4>
+一家软件公司可能有好几款应用软件，一般都会有相同的登录验证方式，相同的广告展示等等。 <br> 
+资源管理型软件，针对不同的角色，会有不同的功能模块显示。<br>
+<h4> 4. 原理 </h4>
+<h6> 基本原理：</h6>
+每个功能模块设计为Module（模型），作为项目中的Library（库）。<br>
+而APP的Module只是集成各个功能模块，从而形成可编译的应用软件。<br>
+<h6> 项目举例说明：</h6>
+以通用的进销存软件为例，进行详细说明。<br>
+以下是功能设计图：  <br>
+<img src="https://github.com/pulque/MultModuleDemo/blob/master/images/functions.png?raw=true" alt="功能设计图"/><br>
+从上图可以看出，不同的功能模块通过组合，可以形成不同的APP。  <br>
+以下是项目代码的截图：  <br>
+<img src="https://github.com/pulque/MultModuleDemo/blob/master/images/project_structure.png?raw=true" alt="代码结构图"/><br>
+以下是编译安装后APP的截图：  <br>
+<img src="https://github.com/pulque/MultModuleDemo/blob/master/images/apps.png?raw=true" alt="手机APP展示图"/><br>
+这样新开发APP就比较简单了，只要添加依赖，就可以显示不同的功能。  <br>
+当然权限还是需要标识来控制。<br>
+<h4> 5. 需要注意 </h4>
+<blockquote>
+> 各个Module中的包名不能相同。 <br> 
+> XML资源名字不能相同。  <br>
+> 通过判断Activity名字来实现打开模块或指定页面。<br>  
+详细参考LoginActivity类的attemptLogin方法<br>
+> 各个Module中的Activity不能设置为启动页，  <br>
+否则安装后会显示多个相同APP。<br>
+</blockquote>
+<h4> 6. 存在的疑问 </h4>
+<blockquote>
+> 是不是功能拆分的太细了？<br>
+> 随着需求的不断变化，Module会不会很多？<br>
+> 依赖升级build.gradle会不会很多，难以维护？<br>
+> 交叉依赖越来越多，会不会影响APP编译？<br>
+> 更改一个多APP引用的Module，能保证所有APP都能正常使用？<br>
+> 经常在各个Module中穿插编写代码，会不会对开发效率产生影响？<br>
+</blockquote>
+<br>
+<br>
