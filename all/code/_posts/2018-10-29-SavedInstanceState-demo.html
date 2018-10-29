@@ -39,6 +39,13 @@ MainFragment +++onViewStateRestored+++ savedInstanceState=NOT NULL
 MainFragment +++onSaveInstanceState+++ savedInstanceState=NOT NULL
 MainActivity +++onSaveInstanceState+++ savedInstanceState=NOT NULL
 </pre>
+崩溃后会调用：<br />
+<pre>
+MainActivity +++onCreateView+++ savedInstanceState=NOT NULL
+MainActivity +++onRestoreInstanceState+++ savedInstanceState=NOT NULL
+MainFragment +++onCreateView+++ savedInstanceState=NOT NULL
+MainFragment +++onViewStateRestored+++ savedInstanceState=NOT NULL
+</pre>
 
 <h3>总结：</h3>
 Bundle中只能存储简单变量，避免影响界面显示。<br/>
