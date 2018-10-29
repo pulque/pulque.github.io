@@ -1,0 +1,50 @@
+---
+layout: default
+title: "Android-SavedInstanceState使用"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">10 Aug 2018</p>
+
+<p><strong>
+  一般学习Android开发的开发者很容易忽略使用SavedInstanceState。<br />
+  对于特殊情况，例如崩溃、后台回收，<br />
+  SavedInstanceState的价值才会得到体现。<br />
+  本文章这对SavedInstanceState进行测试，并总结使用方法。<br />
+</strong></p>
+
+
+<h3>测试项目：</h3>
+<a target="_blank" href="https://github.com/pulque/SavedInstanceState">
+    https://github.com/pulque/SavedInstanceState</a>
+
+<h3>测试方式：</h3>
+同通过打印Log来查看调用的方法。
+
+<h3>测试流程：</h3>
+3个页面，打开1、2、3页面，改变2页面数据，在第3个页面制造崩溃。<br />
+查看2页面信息是否保留。<br />
+可以点击Android Studio中Logcat里的结束进程按钮，结束APP。<br />
+
+<h3>测试结果：</h3>
+进入页面会调用：<br />
+<pre>
+MainActivity +++onCreateView+++ savedInstanceState=NULL
+MainFragment +++onCreateView+++ savedInstanceState=NULL
+MainFragment +++onViewStateRestored+++ savedInstanceState=NOT NULL
+</pre>
+离开页面会调用：<br />
+<pre>
+MainFragment +++onSaveInstanceState+++ savedInstanceState=NOT NULL
+MainActivity +++onSaveInstanceState+++ savedInstanceState=NOT NULL
+</pre>
+
+<h3>总结：</h3>
+Bundle中只能存储简单变量，避免影响界面显示。<br/>
+复杂数据存文件或数据库。<br/>
+变量保存流程：<br/>
+1.onSaveInstanceState保存数据<br/>
+2.onCreateView读取数据，当savedInstanceState不为空时。<br/>
+
+
