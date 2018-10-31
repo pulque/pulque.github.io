@@ -32,6 +32,7 @@ title: "Android-SavedInstanceState使用"
 <pre>
 MainActivity +++onCreateView+++ savedInstanceState=NULL
 MainFragment +++onCreateView+++ savedInstanceState=NULL
+MainFragment +++onActivityCreated+++ savedInstanceState=NOT NULL
 MainFragment +++onViewStateRestored+++ savedInstanceState=NOT NULL
 </pre>
 离开页面会调用：<br />
@@ -43,6 +44,7 @@ MainActivity +++onSaveInstanceState+++ savedInstanceState=NOT NULL
 <pre>
 MainActivity +++onCreateView+++ savedInstanceState=NOT NULL
 MainFragment +++onCreateView+++ savedInstanceState=NOT NULL
+MainFragment +++onActivityCreated+++ savedInstanceState=NOT NULL
 MainFragment +++onViewStateRestored+++ savedInstanceState=NOT NULL
 MainActivity +++onRestoreInstanceState+++ savedInstanceState=NOT NULL
 </pre>
