@@ -45,12 +45,12 @@ ViewModel的不同之处在于界面布局文件XML。
 
         &lt;variable
             name="viewmodel"
-            type="com.lizheblogs.databinding.ui.main.MainViewModel" \/&gt;
+            type="com.lizheblogs.databinding.ui.main.MainViewModel" /&gt;
 
         &lt;variable
             name="fragment"
-            type="com.lizheblogs.databinding.ui.main.MainFragment" \/&gt;
-    &lt;\/data&gt;
+            type="com.lizheblogs.databinding.ui.main.MainFragment" /&gt;
+    &lt;/data&gt;
 
     &lt;android.support.constraint.ConstraintLayout
         android:id="@+id/main"
@@ -63,7 +63,7 @@ ViewModel的不同之处在于界面布局文件XML。
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{() -> fragment.onClickCrash()}"
-            android:text="崩溃" \/&gt;
+            android:text="崩溃" /&gt;
 
         &lt;Button
             android:id="@+id/but1"
@@ -71,7 +71,7 @@ ViewModel的不同之处在于界面布局文件XML。
             android:layout_height="wrap_content"
             android:onClick="@{() -> fragment.onClickMain1()}"
             android:text="跳转列表测试"
-            app:layout_constraintTop_toBottomOf="@+id/butCrash" \/&gt;
+            app:layout_constraintTop_toBottomOf="@+id/butCrash" /&gt;
 
         &lt;TextView
             android:id="@+id/message"
@@ -82,9 +82,9 @@ ViewModel的不同之处在于界面布局文件XML。
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" \/&gt;
+            app:layout_constraintTop_toTopOf="parent" /&gt;
 
-    &lt;\/android.support.constraint.ConstraintLayout&gt;
+    &lt;/android.support.constraint.ConstraintLayout&gt;
 &lt;/layout&gt;
 </pre>
 <p>
@@ -95,10 +95,10 @@ data标签中是引用的变量和对象<br />
 </p>
 MainViewModel中值得一提的是ObservableField<br />
 <pre>
-	public final ObservableField<String> name;
+	public final ObservableField&lt;String&gt; name;
 
     public MainViewModel() {
-        name = new ObservableField<>();
+        name = new ObservableField&lt;&gt;();
         name.set("123456");
     }
 
@@ -136,12 +136,15 @@ BaseHolder：<br />
 <br />
 BaseAdapter：<br />
 <pre>
-	public class BaseAdapter<T> extends RecyclerView.Adapter<BaseHolder> {
-	    private List<T> listData;
+	public class BaseAdapter&lt;T&gt; extends 
+	                                 RecyclerView.Adapter&lt;BaseHolder&gt; {
+	    private List&lt;T&gt; listData;
 	    private int layoutId;
 	    private int variableId;
 
-	    public BaseAdapter(int layoutId, int variableId, List<T> listData) {
+	    public BaseAdapter(int layoutId, 
+	                       int variableId, 
+	                       List&lt;T&gt; listData) {
 	        this.listData = listData;
 	        this.variableId = variableId;
 	        this.layoutId = layoutId;
@@ -149,7 +152,8 @@ BaseAdapter：<br />
 
 	    @NonNull
 	    @Override
-	    public BaseHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	    public BaseHolder onCreateViewHolder(@NonNull ViewGroup parent, 
+	                                         int viewType) {
 	        return new BaseHolder(LayoutInflater.from(parent.getContext())
 	                .inflate(layoutId, parent, false));
 	    }
@@ -181,22 +185,27 @@ ListFragment：
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, 
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.list_fragment, container, false);
+        binding = DataBindingUtil.inflate(inflater, 
+                             R.layout.list_fragment, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ListViewModel mViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        ListViewModel mViewModel = ViewModelProviders.of(this)
+                                                     .get(ListViewModel.class);
         binding.setViewModel(mViewModel);
-        GridLayoutManager linearLayoutManager = new GridLayoutManager(getContext(), 1);
+        GridLayoutManager linearLayoutManager
+                           = new GridLayoutManager(getContext(), 1);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         binding.recyclerView.setLayoutManager(linearLayoutManager);
         binding.recyclerView.setItemAnimator(new DefaultItemAnimator());
-        BaseAdapter<Product> productAdapter = new BaseAdapter<>(R.layout.list_item, BR.product, mViewModel.getArrayList());
+        BaseAdapter&lt;Product&gt; productAdapter = new BaseAdapter&lt;&gt;
+        (R.layout.list_item, BR.product, mViewModel.getArrayList());
         mViewModel.setAdapter(productAdapter);
         binding.recyclerView.setAdapter(productAdapter);
     }
