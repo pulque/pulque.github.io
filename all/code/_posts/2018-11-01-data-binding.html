@@ -159,7 +159,8 @@ public class BaseAdapter&lt;T&gt; extends
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BaseHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BaseHolder holder, 
+                                 int position) {
         holder.setBinding(variableId, listData.get(position));
     }
 
@@ -197,7 +198,7 @@ public class ListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ListViewModel mViewModel = ViewModelProviders.of(this)
-                                                     .get(ListViewModel.class);
+                                   .get(ListViewModel.class);
         binding.setViewModel(mViewModel);
         GridLayoutManager linearLayoutManager
                            = new GridLayoutManager(getContext(), 1);
