@@ -95,17 +95,17 @@ data标签中是引用的变量和对象<br />
 </p>
 MainViewModel中值得一提的是ObservableField<br />
 <pre>
-	public final ObservableField&lt;String&gt; name;
+public final ObservableField&lt;String&gt; name;
 
-    public MainViewModel() {
-        name = new ObservableField&lt;&gt;();
-        name.set("123456");
-    }
+public MainViewModel() {
+    name = new ObservableField&lt;&gt;();
+    name.set("123456");
+}
 
-    public void onClickMessage() {
-        name.set("789");
-        Log.e("===============", "onClickMessage");
-    }
+public void onClickMessage() {
+    name.set("789");
+    Log.e("===============", "onClickMessage");
+}
 </pre>
 解释：<br />
 当set的时候，ObservableField会通知UI更新数据。
@@ -116,58 +116,58 @@ RecyclerView比ListView更加灵活，绑定数据相类似。<br />
 <br />
 BaseHolder：<br />
 <pre>
-	public class BaseHolder extends RecyclerView.ViewHolder {
+public class BaseHolder extends RecyclerView.ViewHolder {
 
-	    private ViewDataBinding mBinding;
+    private ViewDataBinding mBinding;
 
-	    BaseHolder(View v) {
-	        super(v);
-	        mBinding = DataBindingUtil.bind(v);
-	    }
+    BaseHolder(View v) {
+        super(v);
+        mBinding = DataBindingUtil.bind(v);
+    }
 
-	    public void setBinding(int variableId, Object object) {
-	        mBinding.setVariable(variableId, object);
-	        mBinding.executePendingBindings();
-	    }
-	}
+    public void setBinding(int variableId, Object object) {
+        mBinding.setVariable(variableId, object);
+        mBinding.executePendingBindings();
+    }
+}
 </pre>
 解释：<br />
 使用ViewDataBinding绑定数据。<br />
 <br />
 BaseAdapter：<br />
 <pre>
-	public class BaseAdapter&lt;T&gt; extends 
-	                                 RecyclerView.Adapter&lt;BaseHolder&gt; {
-	    private List&lt;T&gt; listData;
-	    private int layoutId;
-	    private int variableId;
+public class BaseAdapter&lt;T&gt; extends 
+                    RecyclerView.Adapter&lt;BaseHolder&gt; {
+    private List&lt;T&gt; listData;
+    private int layoutId;
+    private int variableId;
 
-	    public BaseAdapter(int layoutId, 
-	                       int variableId, 
-	                       List&lt;T&gt; listData) {
-	        this.listData = listData;
-	        this.variableId = variableId;
-	        this.layoutId = layoutId;
-	    }
+    public BaseAdapter(int layoutId, 
+                       int variableId, 
+                       List&lt;T&gt; listData) {
+        this.listData = listData;
+        this.variableId = variableId;
+        this.layoutId = layoutId;
+    }
 
-	    @NonNull
-	    @Override
-	    public BaseHolder onCreateViewHolder(@NonNull ViewGroup parent, 
-	                                         int viewType) {
-	        return new BaseHolder(LayoutInflater.from(parent.getContext())
-	                .inflate(layoutId, parent, false));
-	    }
+    @NonNull
+    @Override
+    public BaseHolder onCreateViewHolder(@NonNull ViewGroup parent, 
+                                         int viewType) {
+        return new BaseHolder(LayoutInflater.from(parent.getContext())
+                .inflate(layoutId, parent, false));
+    }
 
-	    @Override
-	    public void onBindViewHolder(@NonNull BaseHolder holder, int position) {
-	        holder.setBinding(variableId, listData.get(position));
-	    }
+    @Override
+    public void onBindViewHolder(@NonNull BaseHolder holder, int position) {
+        holder.setBinding(variableId, listData.get(position));
+    }
 
-	    @Override
-	    public int getItemCount() {
-	        return listData.size();
-	    }
-	}
+    @Override
+  	  public int getItemCount() {
+        return listData.size();
+    }
+}
 </pre>
 解释：<br />
 使用ViewDataBinding绑定数据。<br />
@@ -175,7 +175,7 @@ BaseAdapter：<br />
 ListFragment：
 <br />
 <pre>
-	public class ListFragment extends Fragment {
+public class ListFragment extends Fragment {
 
     private ListFragmentBinding binding;
 
