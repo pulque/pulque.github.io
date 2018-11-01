@@ -1,0 +1,221 @@
+---
+layout: default
+title: "Android-DataBinding使用"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">1 Nov 2018</p>
+
+<p><strong>
+  最近在学习使用jetpack里的组件，本项目学习DataBinding模块。<br />
+  DataBinding是在XML中设置要绑定的数据变量，通过ViewModel更新数据。
+</strong></p>
+
+<h3>相关文档：</h3>
+jetpack官网：<br />
+<a target="_blank" href="https://developer.android.com/jetpack/">
+    https://developer.android.com/jetpack/</a><br />
+data-binding官方文档：<br />
+<a target="_blank" href="https://developer.android.com/topic/libraries/data-binding/">
+    https://developer.android.com/topic/libraries/data-binding/</a>
+
+
+<h3>学习项目：</h3>
+<a target="_blank" href="https://github.com/pulque/DataBinding">
+    https://github.com/pulque/DataBinding</a>
+
+<h3>学习说明：</h3>
+<blockquote>
+1.ViewModel，负责更新XML文件中的界面数据。<br />
+2.ConstraintLayout，约束布局。<br />
+3.RecyclerView，列表显示。<br />
+4.cardview，卡片样式。<br />
+</blockquote>
+
+<h3>代码流程：</h3>
+<h4>1.ViewModel</h4>
+ViewModel的不同之处在于界面布局文件XML。
+<pre>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.lizheblogs.databinding.ui.main.MainViewModel" />
+
+        <variable
+            name="fragment"
+            type="com.lizheblogs.databinding.ui.main.MainFragment" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.main.MainFragment">
+
+        <Button
+            android:id="@+id/butCrash"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> fragment.onClickCrash()}"
+            android:text="崩溃" />
+
+        <Button
+            android:id="@+id/but1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> fragment.onClickMain1()}"
+            android:text="跳转列表测试"
+            app:layout_constraintTop_toBottomOf="@+id/butCrash" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewmodel.onClickMessage()}"
+            android:text="@{viewmodel.name, default=app}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
+</pre>
+<p>
+解释：<br />
+layout标签建立后，AS会生成一个以XML名+Binding的对象，可以用这个对象直接操作XML中的控件。<br />
+data标签中是引用的变量和对象<br />
+@{}中绑定的数据或者调用的方法。<br />
+</p>
+MainViewModel中值得一提的是ObservableField<br />
+<pre>
+	public final ObservableField<String> name;
+
+    public MainViewModel() {
+        name = new ObservableField<>();
+        name.set("123456");
+    }
+
+    public void onClickMessage() {
+        name.set("789");
+        Log.e("===============", "onClickMessage");
+    }
+</pre>
+解释：<br />
+当set的时候，ObservableField会通知UI更新数据。
+
+<h4>2.结合RecyclerView</h4>
+RecyclerView比ListView更加灵活，绑定数据相类似。<br />
+需要Adapter和Holder来适配数据。<br />
+<br />
+BaseHolder：<br />
+<pre>
+	public class BaseHolder extends RecyclerView.ViewHolder {
+
+	    private ViewDataBinding mBinding;
+
+	    BaseHolder(View v) {
+	        super(v);
+	        mBinding = DataBindingUtil.bind(v);
+	    }
+
+	    public void setBinding(int variableId, Object object) {
+	        mBinding.setVariable(variableId, object);
+	        mBinding.executePendingBindings();
+	    }
+	}
+</pre>
+解释：<br />
+使用ViewDataBinding绑定数据。<br />
+<br />
+BaseAdapter：<br />
+<pre>
+	public class BaseAdapter<T> extends RecyclerView.Adapter<BaseHolder> {
+	    private List<T> listData;
+	    private int layoutId;
+	    private int variableId;
+
+	    public BaseAdapter(int layoutId, int variableId, List<T> listData) {
+	        this.listData = listData;
+	        this.variableId = variableId;
+	        this.layoutId = layoutId;
+	    }
+
+	    @NonNull
+	    @Override
+	    public BaseHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	        return new BaseHolder(LayoutInflater.from(parent.getContext())
+	                .inflate(layoutId, parent, false));
+	    }
+
+	    @Override
+	    public void onBindViewHolder(@NonNull BaseHolder holder, int position) {
+	        holder.setBinding(variableId, listData.get(position));
+	    }
+
+	    @Override
+	    public int getItemCount() {
+	        return listData.size();
+	    }
+	}
+</pre>
+解释：<br />
+使用ViewDataBinding绑定数据。<br />
+<br />
+ListFragment：
+<br />
+<pre>
+	public class ListFragment extends Fragment {
+
+    private ListFragmentBinding binding;
+
+    public static ListFragment newInstance() {
+        return new ListFragment();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.list_fragment, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ListViewModel mViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        binding.setViewModel(mViewModel);
+        GridLayoutManager linearLayoutManager = new GridLayoutManager(getContext(), 1);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.recyclerView.setLayoutManager(linearLayoutManager);
+        binding.recyclerView.setItemAnimator(new DefaultItemAnimator());
+        BaseAdapter<Product> productAdapter = new BaseAdapter<>(R.layout.list_item, BR.product, mViewModel.getArrayList());
+        mViewModel.setAdapter(productAdapter);
+        binding.recyclerView.setAdapter(productAdapter);
+    }
+
+}
+</pre>
+解释：<br />
+ViewModel获取Adapter是为了当数据变化的时候，更新界面。<br />
+
+<h3>学习结果：</h3>
+学习用ViewDataBinding绑定数据，用RecyclerView显示列表数据<br />
+
+<h3>总结：</h3>
+ViewModel只是将数据缓存到内存中，退出或崩溃数据不会保留。<br/>
+RecyclerView的点击事件，在viewHolder.itemView中设置。<br/>
+
+
+<h3>进阶：</h3>
+RecyclerView的交互和数据更新。<br/>
+Fragment中的逻辑需要进一步分离。<br/>
+<br/>
+<br/>
