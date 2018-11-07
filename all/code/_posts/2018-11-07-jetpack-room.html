@@ -1,0 +1,189 @@
+---
+layout: default
+title: "Android-Jetpack中Room使用"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">7 Nov 2018</p>
+
+<p><strong>
+  最近在学习使用jetpack里的组件，本项目学习Room模块。<br />
+  Room是数据库框架，更方便、简单地操作数据库。
+</strong></p>
+
+<h3>相关文档：</h3>
+Room官方说明：<br />
+<a target="_blank" href="https://developer.android.com/topic/libraries/architecture/room">
+    https://developer.android.com/topic/libraries/architecture/room</a><br />
+Room官方文档：<br />
+<a target="_blank" href="https://developer.android.com/training/data-storage/room/">
+    https://developer.android.com/training/data-storage/room/</a><br />
+Room实例教学：<br />
+<a target="_blank" href="https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#0">
+    https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#0</a><br />
+Room实例代码：<br />
+<a target="_blank" href="https://github.com/googlecodelabs/android-room-with-a-view">
+    https://github.com/googlecodelabs/android-room-with-a-view</a><br />
+本文章代码：<br />
+<a target="_blank" href="https://github.com/pulque/WordNotes">
+    https://github.com/pulque/WordNotes</a><br />
+
+
+<h3>类说明：</h3>
+<h4>1.WelcomeActivity</h4>
+开始页面，显示文字列表。添加按钮打开添加页面。
+<h4>2.NewWordActivity</h4>
+添加文字页面，点击保存，把文字返回给列表页面进行添加。
+<h4>3.WordViewModel</h4>
+缓存数据，并监听数据变化。
+<h4>4.WordListAdapter</h4>
+列表适配器，使用RecyclerView展示数据。
+<h4>5.WordRoomDatabase</h4>
+数据库创建类，并提供操作Dao的实例。
+<h4>6.WordRepository</h4>
+通过WordRoomDatabase提供的Dao实例，操作数据，查询、插入等。
+<h4>7.WordDao</h4>
+提供表操作的接口，包含数据库执行语句。
+<h4>8.Word</h4>
+表结构定义对象。
+
+<h3>Room相关类详细说明：</h3>
+<h4>1.Word</h4>
+<pre>
+@Entity(tableName = "word_table")
+public class Word {
+
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "word")
+    private String mWord;
+    @NonNull
+    @ColumnInfo(name = "chinese")
+    private String mChinese;
+
+    public Word(@NonNull String word, @NonNull String chinese) {
+        this.mWord = word;
+        this.mChinese = chinese;
+    }
+
+    public String getWord() {
+        return this.mWord;
+    }
+
+    public String getChinese() {
+        return mChinese;
+    }
+}
+</pre>
+解释：<br />
+@Entity在数据库中表的名字。<br />
+@PrimaryKey主键<br />
+@ColumnInfo在表中字段的名字<br />
+GET方法必须定义，数据库需要此方法对变量进行操作。<br />
+
+<h4>2.WordDao</h4>
+<pre>
+@Dao
+public interface WordDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(Word word);
+
+    @Query("DELETE FROM word_table")
+    void deleteAll();
+
+    @Query("SELECT * from word_table ORDER BY word ASC")
+    LiveData<List<Word>> getAllWords();
+}
+</pre>
+解释：<br />
+@Dao表操作标识。<br />
+@Insert插入操作，可以不提供执行语句。<br />
+@Query语句执行标识，需添加执行语句。<br />
+
+<h4>3.WordRoomDatabase</h4>
+去掉添加默认数据部分。
+<pre>
+@Database(entities = {Word.class}, version = 1)
+public abstract class WordRoomDatabase extends RoomDatabase {
+
+    private static volatile WordRoomDatabase INSTANCE;
+
+    static WordRoomDatabase getDatabase(final Context context) {
+        if (INSTANCE == null) {
+            synchronized (WordRoomDatabase.class) {
+                if (INSTANCE == null) {
+                    // Create database here
+                    INSTANCE = Room.databaseBuilder(
+                            context.getApplicationContext(),
+                            WordRoomDatabase.class, "word_database")
+                            .build();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
+    public abstract WordDao wordDao();
+}
+</pre>
+解释：<br />
+@Database标识所包含的表喝数据库版本等信息。<br />
+创建数据库，并保存单例，提供表操作接口。<br />
+
+<h4>4.WordRepository</h4>
+数据异步操作，为WordViewModel提供数据支持。
+<pre>
+public class WordRepository {
+
+    private WordDao mWordDao;
+    private LiveData<List<Word>> mAllWords;
+
+    public WordRepository(Application application) {
+        WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
+        mWordDao = db.wordDao();
+        mAllWords = mWordDao.getAllWords();
+    }
+
+    public LiveData<List<Word>> getAllWords() {
+        return mAllWords;
+    }
+
+    public void insert(Word word) {
+        new insertAsyncTask(mWordDao).execute(word);
+    }
+
+    private static class insertAsyncTask extends AsyncTask<Word, Void, Void> {
+
+        private WordDao mAsyncTaskDao;
+
+        insertAsyncTask(WordDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Word... params) {
+            mAsyncTaskDao.insert(params[0]);
+            return null;
+        }
+    }
+}
+</pre>
+解释：<br />
+使用AsyncTask进行异步操作。<br />
+使用Dao进行表数据操作。<br />
+
+<h3>总结：</h3>
+WordRepository通过数据库WordRoomDatabase提供的WordDao，<br/>
+给WordViewModel提供数据。<br/>
+WordViewModel通知UI进行数据显示更新。<br/>
+
+<h3>进阶：</h3>
+使用RxAndroid2代替AsyncTask进行异步操作。<br/>
+Room复杂操作。<br/>
+进阶参考：<br/>
+<a target="_blank" href="https://github.com/googlesamples/android-architecture-components/">
+    https://github.com/googlesamples/android-architecture-components/</a><br/>
+<br/>
+<br/>
