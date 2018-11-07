@@ -94,7 +94,7 @@ public interface WordDao {
     void deleteAll();
 
     @Query("SELECT * from word_table ORDER BY word ASC")
-    LiveData<List<Word>> getAllWords();
+    LiveData&lt;List&lt;Word&gt;&gt; getAllWords();
 }
 </pre>
 解释：<br />
@@ -138,7 +138,7 @@ public abstract class WordRoomDatabase extends RoomDatabase {
 public class WordRepository {
 
     private WordDao mWordDao;
-    private LiveData<List<Word>> mAllWords;
+    private LiveData&lt;List&lt;Word&gt;&gt; mAllWords;
 
     public WordRepository(Application application) {
         WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
@@ -146,7 +146,7 @@ public class WordRepository {
         mAllWords = mWordDao.getAllWords();
     }
 
-    public LiveData<List<Word>> getAllWords() {
+    public LiveData&lt;List&lt;Word&gt;&gt; getAllWords() {
         return mAllWords;
     }
 
@@ -154,7 +154,7 @@ public class WordRepository {
         new insertAsyncTask(mWordDao).execute(word);
     }
 
-    private static class insertAsyncTask extends AsyncTask<Word, Void, Void> {
+    private static class insertAsyncTask extends AsyncTask&lt;Word, Void, Void&gt; {
 
         private WordDao mAsyncTaskDao;
 
