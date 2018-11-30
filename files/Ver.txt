@@ -1,0 +1,1 @@
+{"Android":{"ver":"3.4.0","server":"3.4.0","link":"www.baidu.com","date":""},"iOS":{"ver":"3.4.0","server":"3.4.0","link":"www.baidu.com","date":"2018-11-14"}}
