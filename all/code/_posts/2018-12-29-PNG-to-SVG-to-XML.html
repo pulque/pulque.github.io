@@ -1,0 +1,86 @@
+---
+layout: default
+title: "Android-RecyclerView添加拖拽功能"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">29 Dec 2018</p>
+
+<p><strong>RecyclerView添加拖拽排序功能</strong></p>
+
+<p>Demo地址：<br />
+<a target="_blank" href="https://github.com/pulque/DragListDemo">
+            https://github.com/pulque/DragListDemo</a><br /> 
+
+<h3>1. 实现功能</h3>
+    通过继承ItemTouchHelper实现对元素的拖拽，可以排序和侧滑删除。<br/>
+<h3>2. 实现步骤</h3>
+    继承ItemTouchHelper.Callback，重写方法进行设置。<br/>
+    设置长按拖拽和横向滑动删除。<br/>
+    并对适配器回调方法，进行数据处理。<br/>
+<h3>3. 关键代码</h3>
+    //设置回调<br/>
+    ItemTouchHelper.Callback callback = new TouchHelperCallback(adapter);<br/>
+    //拖拽帮助类<br/>
+    ItemTouchHelper touchHelper = new ItemTouchHelper(callback);<br/>
+    //作用在列表上<br/>
+    touchHelper.attachToRecyclerView(binding.functionsList);<br/>
+<h3>4. ItemTouchHelper.Callback说明</h3>
+    isLongPressDragEnabled()是否可以长按拖拽<br/>
+    isItemViewSwipeEnabled()是否可以侧滑删除<br/>
+    getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder)<br/>
+    滑动的方式设置<br/>
+    当移动结束后回调onMove<br/>
+    当侧滑删除后回调onSwiped<br/>
+<h3>5. 总结</h3>
+     其实ItemTouchHelper已经帮我们做了很多大量工作。<br/>
+     <br/>
+     如果不想长按来移动排序可以这样：<br/>
+     1.监听item view中setOnTouchListener的onTouch方法<br/>
+     2.通过接口将holder传给ItemTouchHelper<br/>
+     3.调用touchHelper.startDrag(holder)开始拖拽<br/>
+     <br/>
+     代码：<br/>
+     <pre><code>
+     public interface StartDragListener {
+         //触摸imageview，开启拖动的接口
+         void startDragItem(RecyclerView.ViewHolder holder);
+     }
+     BaseAdapter：
+     //set接口回调
+     public void setDragListener(StartDragListener dragListener) {
+         this.dragListener = dragListener;
+     }
+     
+     holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+                 float x = 0;
+                 float y = 0;
+     
+                 @Override
+                 public boolean onTouch(View v, MotionEvent event) {
+                     //注意：这里down和up都会回调该方法
+                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                         x = event.getX();
+                         y = event.getY();
+                     } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                         float xTemp = event.getX();
+                         float yTemp = event.getY();
+                         if (xTemp - x > 5 || xTemp - x < -5 || yTemp - y > 5 || yTemp - y < -5) {
+                             if (dragListener != null) {
+                                 dragListener.startDragItem(holder);
+                             }
+                         }
+                     }
+                     return false;
+                 }
+             });
+      
+    @Override
+    public void startDragItem(RecyclerView.ViewHolder holder) {
+        touchHelper.startDrag(holder);
+    }
+    </code></pre>
+<br/>    
+<br/>
+<br/>
