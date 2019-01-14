@@ -7,6 +7,59 @@ title: "在Android系统中使用git"
 
 <p class="publish_date">14 Jan 2019</p>
 
-<video src="/video/VID_20190114_153556.mp4" width="512" controls="controls">
-your browser does not support the video tag
-</video>
+<p><strong>
+为了能够随时随地向git仓库中提交文件，希望在手机上能做到这点。<br/>
+就找到了开源termux终端APP，类似“超级终端”APP，<br/>
+和在Linux上使用终端一样方便。<br/>
+在termux的基础上修改，添加辅助输入，编辑文件。<br/>
+
+</strong></p>
+
+<h3>资料</h3>
+<p>
+官网：<br/>
+<a target="_blank" href="https://termux.com/">
+            https://termux.com/</a><br/>
+源码：<br/>
+<a target="_blank" href="https://github.com/termux/termux-app">
+            https://github.com/termux/termux-app</a><br/>
+中文教程：<br/>
+<a target="_blank" href="https://www.sqlsec.com/2018/05/termux.html">
+            https://www.sqlsec.com/2018/05/termux.html</a><br/>
+英文教程：<br/>
+<a target="_blank" href="https://pedronveloso.com/proper-git-client-android/">
+            https://pedronveloso.com/proper-git-client-android/</a><br/>
+本人封装：<br/>
+<a target="_blank" href="https://github.com/pulque/termux-git-app">
+            <strong>https://github.com/pulque/termux-git-app</strong></a><br/>
+</p>
+
+<h3>git安装</h3>
+<h4>1.apt update && apt upgrade</h4>
+更新源和升级，否则安装git会失败。
+<h4>2.apt install git</h4>
+安装git。
+<h4>3.termux-setup-storage</h4>
+映射目录，这样就可以操作SDCard上的文件了。<br/>
+加上具体的目录映射：（先要建立相应的文件夹在SDCard上）<br/>
+<pre>
+ln -s /data/data/com.termux/files/home/storage/shared/github
+</pre>
+
+
+<h3>添加功能</h3>
+    
+<h4>1.一些常用命令</h4>
+    如“cd ..”、“git clone”、“git pull”、等等<br/>
+    点击按钮就可以代替输入。<br/>
+<h4>2.在手机上编辑文件</h4>
+    其实可以使用手机上的其他app编辑，后续可能会添加其他实用功能，根据需求修改。<br/>
+
+<h4>3.记录已经输入过的文字</h4>
+    记录输入过的文字和标签，可以帮助用户快速输入或修改。<br/>
+
+
+<h3>问题</h3>
+不能修改包名，尝试后失败，有厉害的小伙伴可以试试。<br/>
+<br/>
+<br/>
