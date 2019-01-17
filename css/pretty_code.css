@@ -5,7 +5,7 @@
 	/*width: 99%;*/
 	overflow: auto;
 	margin: 18px 0 18px 0px !important;
-    width: 600px;
+    width: 400px;
 	padding: 10px; /* adds a little border on top when controls are hidden */
         border: dashed 2px #e5e5e5;
         clear:both;
