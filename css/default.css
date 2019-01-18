@@ -1,3 +1,7 @@
+:root{
+    --base_width:512px;
+}
+
 body {
 background: #373737;
 color:#e5e5e5;
@@ -44,7 +48,9 @@ li { padding:0 4px; color:#ccc; list-style: none; }
 ul.posts li span { float:right; font-family:monofur, monaco, courier; color:#888; }
 ul.posts li a { font-weight:200;}
 
+/**
 div#post ul li { list-style: circle; }
+**/
 
 blockquote {
 border-left:8px solid #0383c9;
@@ -64,7 +70,7 @@ pre {
 font-family: Monaco, Courier;
 background: #191919;
 border: dashed 2px #e5e5e5;
- width: 600px;
+width: var(--base_width);
 padding: 5px;
 font-size:1em;
 line-height: 2em;
@@ -93,11 +99,10 @@ border: solid 1px #fff;
 
 h1 {
 color:#0383c9;
-font-size:4.7em;
+font-size:60px;
 letter-spacing:-5px;
 margin:0 0 30px 0px;
-padding:50px 0 0 0;;
-
+padding:50px 0 0 0;
 }
 
 h1 a {
@@ -108,10 +113,10 @@ text-transform:none;
 h1 a:hover { color:#fba919 ;}
 
 #logo {
-	margin: -25px 30px -30px -50px;
+	margin: -25px -10px -20px -80px;
 	float:right;
 	background: url('/images/site/L.png');
-	height: 100px; width:200px;
+	height: 100px; width:100px;
 }
 
 .publish_date {
@@ -119,9 +124,8 @@ h1 a:hover { color:#fba919 ;}
 	margin-bottom:0px;
 	text-align:right;
 	font-size:0.8em;
-	width:490px;
+	width:auto;
 	color: #23af4c;
-
 }
 
 
@@ -137,17 +141,9 @@ a.pink:hover { border: solid 2px #f5a2c6;padding:1px; text-decoration:none;  }
 a.green:hover { color:#212121; background-color:#23af4c;text-decoration:none; }
 a.blue:hover { color:#212121; background-color:#0383c9;text-decoration:none; }
 a.orange:hover { color:#fba919;  padding:1px; border: solid 2px #fba919; text-decoration:none; }
-.slogan a { padding:3px; line-height: 2.5em; }
+.slogan a { padding:3px; line-height: 40px; }
 
 .commentslink { margin-bottom: 35px;display:block;border-bottom:solid 1px #dadada;padding-bottom:25px; }
-/*
-pink #f5a2c6
-light-green #23af4c
-dark-green #2f8b49 
-light-orange #fba919
-dark-orange #e39c1f
-
-*/
 
 h2 {
 border-bottom:1px solid #e5e5e5;
@@ -181,14 +177,13 @@ color: #23af4c;
 
 #wrap {
 color:#f4f4f4;
-margin:10px auto;
+margin:0 auto;
 padding:0;
-width:670px;
+width:var(--base_width);
 }
 
 #header {
 margin:0;
-
 }
 
 #toplinks {
@@ -203,11 +198,11 @@ color:gray;
 
 div.slogan {
 color:gray;
-font-size:1.5em;
+font-size:18px;
 font-weight:700;
-letter-spacing:-1px;
+letter-spacing:0px;
 line-height:1.2em;
-margin:-15px 0 60px 0px;
+margin:-15px 80px 60px 0px;
 }
 div.slogan div { display:inline;}
 
@@ -219,7 +214,7 @@ line-height:1.5em;
 margin:0;
 padding:0;
 text-align:left;
-width:500px;
+width:var(--base_width);
 }
 
 #contentalt {
@@ -246,6 +241,7 @@ line-height:1.6em;
 margin:0 auto;
 padding:8px 0;
 text-align:right;
+width:var(--base_width);
 }
 
 #footer p {
