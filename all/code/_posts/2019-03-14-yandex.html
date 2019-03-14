@@ -1,0 +1,70 @@
+---
+layout: default
+title: "Android手机上使用Chrome插件"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">14 Mar 2019</p>
+
+<p>
+	使用Chrome浏览器中的扩展程序访问Android的官网很方便，<br/>
+	我就想能不能手机上也可以这样访问，<br/>
+	但是很遗憾，<br/>
+	手机版的Chrome浏览器不支持扩展程序。<br/>
+	<br/>
+	于是……<br/>
+	经过查找，发现了出自俄罗斯的“Yandex”！<br/>
+	它可以添加Chrome的扩展程序，在Android手机上使用。<br/>
+</p>
+<p>
+	下面用<font color="pink">中国天气预报</font>扩展程序为例，记录整个流程。
+</p>
+
+<h3>1.下载Yandex APP</h3>
+<p>
+官网：<br/>
+<a target="_blank" href="https://browser.yandex.com/mobile/">
+            https://browser.yandex.com/mobile/</a><br/>
+我没下载成功……<br/>
+<a target="_blank" href="https://apkpure.com/yandex-browser-with-protect/com.yandex.browser">
+            https://apkpure.com/yandex-browser-with-protect/com.yandex.browser</a><br/>
+我在这下载的，版本：19.3.1.333 for Android。<br/>
+国内想下，找度娘吧……<br/>
+或者：（试试看吧）<br/>
+<a target="_blank" href="https://apkgk.com/com.yandex.browser">
+            https://apkgk.com/com.yandex.browser</a><br/>
+安装后图标像这样：<br/>
+<img src="/images/blogs/code/2019-03-14-yandex/logo.png" width="240" alt="图标"/><br/>
+首页：<br/>
+<img src="/images/blogs/code/2019-03-14-yandex/main.png" width="500" alt="首页"/><br/>
+
+<h3>2.导出Chrome的扩展程序</h3>
+<font color="pink">2.1</font> 在PC上Chrome的地址输入“chrome://extensions/”<br/>
+<font color="pink">2.2</font> 在右上角打开“开发者模式”<br/>
+能看到：<br/>
+<img src="/images/blogs/code/2019-03-14-yandex/chrome_extensions.png" width="500" alt="扩展程序"/><br/>
+记录扩展程序的ID：chllelencipbhdcelplgadmefkopmpgd<br/>
+<font color="pink">2.3</font> 找到此ID的文件夹<br/>
+一般Windows的路径为：<br/>
+C:\Users\用户名\AppData\Local\Google\Chrome\User Data\Default\Extensions<br/>
+在对应ID的文件夹下可以看到版本号文件夹，例如：5.3.8_0<br/>
+<font color="pink">2.4</font> 拷贝5.3.8_0出来，删除里面的_metadata文件夹。<br/>
+<font color="pink">2.5</font> 然后将5.3.8_0文件夹拷贝到手机中。<br/>
+<h3>3.添加扩展程序到Yandex</h3>
+<font color="pink">3.1</font> 在主页搜索框中输入“chrome://extensions/”<br/>
+<font color="pink">3.2</font> 在右上角打开“开发者模式”<br/>
+<font color="pink">3.3</font> 点击“加载已解压的扩展程序”<br/>
+<font color="pink">3.4</font> 选择5.3.8_0文件夹中的manifest.json文件<br/>
+<h3>4.大功告成</h3>
+如果程序正确，便什么提示都没有，直接就添加进去了，界面和Chrome一样。<br/>
+如果把Chrome的应用程序拷贝过来是会报错的：（Postman）<br/>
+<img src="/images/blogs/code/2019-03-14-yandex/error.png" width="500" alt="错误提示"/><br/>
+<br/>
+参考教程：<br/>
+<br/>
+<a target="_blank" href="https://baijiahao.baidu.com/s?id=1596014054458586962&wfr=spider&for=pc">
+            https://baijiahao.baidu.com/s?id=1596014054458586962&wfr=spider&for=pc</a><br/>
+<br/>
+<a target="_blank" href="http://www.sohu.com/a/226436689_114760">
+            http://www.sohu.com/a/226436689_114760</a><br/>
