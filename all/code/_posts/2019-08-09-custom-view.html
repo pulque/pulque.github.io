@@ -1,0 +1,113 @@
+---
+layout: default
+title: "Android自定义View"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">9 Aug 2019</p>
+
+<p>
+	本文章主要介绍Android系统中，自定义View的开发。<br/>
+	通常用于展示特定的样式，或抽象控件，方便复用。
+</p>
+<h3>1.自定义控件的传参</h3>
+定义declare-styleable，方便从XML布局文件中传入类内部。<br/>
+文件目录：<br/>
+res\values\atts.xml<br/>
+文件内容：<br/>
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;declare-styleable name="SupEditText"&gt;
+        &lt;attr name="isFilters" format="boolean" /&gt;
+        &lt;attr name="emptyTextSize" format="dimension" /&gt;
+        &lt;attr name="textSize" format="dimension" /&gt;
+        &lt;attr name="errorHintColor" format="color" /&gt;
+        &lt;attr name="errorTextSize" format="dimension" /&gt;
+        &lt;attr name="errorText1" format="dimension|string" /&gt;
+        &lt;attr name="errorText2" format="dimension|string" /&gt;
+    &lt;/declare-styleable&gt;
+&lt;/resources&gt;
+</pre>
+
+<h3>2.自定义类</h3>
+以EditText为例，展示获取XML中设置的变量
+<pre>
+package com.lizheblogs.view;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatEditText;
+
+import com.teenysoft.jdxs.R;
+
+public class SupEditText extends AppCompatEditText {
+
+    private boolean isFilters = true;
+    private float emptyTextSize = 12;
+    private float textSize = 14;
+    private int errorHintColor;
+    private float errorTextSize = 14;
+    private String errorText1;
+    private String errorText2;
+
+public SupEditText(Context context) {
+    super(context);
+    init(context, null);
+}
+
+public SupEditText(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+}
+
+
+public SupEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+    init(context, attrs);
+}
+
+    private void init(Context context, AttributeSet attrs) {
+        Resources resources = context.getResources();
+        errorHintColor = resources.getColor(R.color.edit_text_error_text);
+        if (attrs != null) {
+//从xml的属性中获取到字体颜色与string
+TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SupEditText);
+isFilters = ta.getBoolean(R.styleable.SupEditText_isFilters, true);
+emptyTextSize = ta.getDimension(R.styleable.SupEditText_emptyTextSize, 12);
+textSize = ta.getDimension(R.styleable.SupEditText_textSize, 14);
+errorHintColor = ta.getColor(R.styleable.SupEditText_errorHintColor,
+        errorHintColor);
+errorTextSize = ta.getDimension(R.styleable.SupEditText_errorTextSize, 14);
+errorText1 = ta.getString(R.styleable.SupEditText_errorText1);
+errorText2 = ta.getString(R.styleable.SupEditText_errorText2);
+ta.recycle();
+        }
+    }
+}
+</pre>
+这样就可以通过XML中的设置，来改变控件的样式。
+<h3>3.XML布局</h3>
+在XML布局中设置变量的值。<br/>
+以EditText为例，展示XML中设置变量<br/>
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;com.lizheblogs.view.SupEditText
+xmlns:android="http://schemas.android.com/apk/res/android"
+<font color="red">xmlns:ts="http://schemas.android.com/apk/res-auto"</font>
+android:id="@+id/userNameET"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+ts:emptyTextSize="12sp"
+ts:errorHintColor="@color/edit_text_error_text"
+ts:errorText1="@string/input_user_name_please"
+ts:errorTextSize="14sp"
+ts:isFilters="true"
+ts:textSize="14sp" /&gt;
+</pre>
+ts为空间名，可随意。<br/>
+<h3>大功告成！</h3>
