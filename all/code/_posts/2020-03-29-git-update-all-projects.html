@@ -1,0 +1,40 @@
+---
+layout: default
+title: "GIT UPDATE ALL PROJECTS"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">39 Mar 2020</p>
+
+<p>
+	用shell脚本，批量更新git仓库。<br/>
+	脚本会循环两层文件夹，寻找.git文件夹
+	来断定是否是git仓库，从而更新。
+</p>
+<pre>
+#!/bin/sh
+for dir in $(ls -d */)
+do
+  cd $dir
+  echo "into $dir"
+  if [ -d ".git" ]; then
+     git pull
+  else
+     for dir in $(ls -d */)
+	 do
+	   cd $dir
+	   echo "into $dir"
+	   if [ -d ".git" ]; then
+		  git pull
+	   fi
+	   cd ..
+	 done
+  fi
+  cd ..
+done
+</pre>
+
+保存为git_pull.sh文件<br/>
+在git bash中执行“./git_pull.sh”即可。<br/>
+<br/>
