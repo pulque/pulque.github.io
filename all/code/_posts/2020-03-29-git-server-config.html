@@ -1,0 +1,32 @@
+---
+layout: default
+title: "GIT SERVER CONFIG"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">39 Mar 2020</p>
+
+<p>
+	在Win10上搭建并配置Git服务器，在局域网内进行代码提交。<br/>
+	也可以保存文件，方便、快捷、高效。
+</p>
+<h3>1.服务器工具：gitblit</h3>
+官网：
+<a target="_blank" href="http://www.gitblit.com/">
+            http://www.gitblit.com/</a><br/>
+无需安装，解压即可。
+<h3>2.修改配置文件</h3>
+目录：gitblit-1.9.0\data\defaults.properties<br/>
+<h4>2.1：服务器仓库本地目录：<h4/>
+git.repositoriesFolder = E:/Git/GitRepository<br/>
+<h4>2.2：服务器访问端口：<h4/>
+server.httpPort = 9874<br/>
+<h4>2.3：服务器IP地址：<h4/>
+server.httpBindInterface = 192.168.1.100<br/>
+保存文件<br/>
+<h3>3.开启服务</h3>
+执行：\gitblit-1.9.0\gitblit.cmd
+<h3>4.网页端配置Git</h3>
+浏览器打开：http://192.168.1.100:9874/<br/>
+可以新建或修改仓库。
