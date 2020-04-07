@@ -1,0 +1,25 @@
+---
+layout: default
+title: "Android Studio 中 build 的中文乱码解决"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">7 Apr 2020</p>
+
+<p>
+	Android Studio使用中，Build框中出现乱码。
+</p>
+<h3>解决：</h3>
+C:\Users\【用户名】\.AndroidStudio3.6\config目路下，<br/>
+studio64.exe.vmoptions文件，用文本打开，<br/>
+并添加，“-Dfile.encoding=UTF-8”，保存重启即可。<br/>
+如果没有此目路，在安装目录下查找即可。<br/>
+<br/>
+<br/>
+参考文献：<br/>
+<a target="_blank" href="https://stackoverflow.com/questions/60392919/the-build-output-console-prints-messy-codes-when-upgrade-the-android-studio-to-t">
+https://stackoverflow.com/questions/60392919/<br/>
+the-build-output-console-prints-messy-codes-<br/>
+when-upgrade-the-android-studio-to-t</a><br/>
+<br/>
