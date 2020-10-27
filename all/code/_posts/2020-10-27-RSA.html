@@ -1,0 +1,272 @@
+---
+layout: default
+title: "Java实现RSA加密和解密"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">27 Oct 2020</p>
+
+<p>
+	使用OpenSSL生成密钥对（公钥和私钥），使用java代码对字符串进行加密解密。<br/>
+	使用公钥加密，可以使用私钥解密，反之也可以。
+</p>
+<h3>1.安装OpenSSL并生成密钥</h3>
+官网：<a target="_blank" href="https://www.openssl.org/">https://www.openssl.org/</a><br/>
+Windows安装包下载：<br/>
+<a target="_blank" href="https://oomake.com/download/openssl">https://oomake.com/download/openssl</a>
+<br/>
+安装完成后打开\OpenSSL-Win64\bin\openssl.exe<br/>
+生成密钥文件：<br/>
+<pre>
+genrsa -des3 -out lizheblogs_privkey.pem 2048
+</pre>
+如果不需要密码，去掉-des3<br/>
+<br/>
+输出私钥内容：<br/>
+<pre>
+rsa -in lizheblogs_private_key.pem
+</pre>
+输出公钥内容：<br/>
+<pre>
+rsa -in lizheblogs_private_key.pem -pubout
+</pre>
+内容类似于：<br/>
+<pre>
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAvKeg42T4bPvh1tjPXrwLQH34zy7KlDWtlHL2RGK4mGiV3f2V
+CViNvHJGfjTCUjypBGxN3hR32ubEBYeShfieVHljEPZwfJ80R0D2Z1OZRc/weQfh
+rqGFXCls+kvLiN0x45PDywZC3SmNyqJsLrvX7C3NcBUfSmOX3L0YjqsYtvkK4Frt
+O5j4h/sDxfdsPzKcQ3G54lGNLCU2h8JTeqIBISAFysAxXitHxM03OfwGXet1KHoj
+stAmtPz/CFJ8QRO0LT21qrzclMA9mzP6A13BMUmEwUMjpSqocLU7YCXEMEjC+4dB
+uoHWRXuEC4XKlPoiZMNY+RLNsDoAX3IpA6Et1QIDAQABAoIBAFC9LQ4k2G1MH4tj
+ntxcfjRLtYB19h0YHAG8cckytu4DVKB9NpuZWo+cGK9KxR+M9oj+ERVKjUESIjJ7
+oynTDW/5w3wu/FVZjXYxR0NRc/d81t31kZC7b+fRkuJMLf+VKxTK2LC7LUKZ1iUy
+/jnCCtb5g0LEx29+0C+YfjoQ37LuhoG657VFyKiFNKt26m0f9cpURs9EyHjv290v
+HoZ5sBIgubPRWxhNV33DIDTJ1fQX+EEFyC637z6XKCar6JgOwUhBJwagVnzxxdsq
+kpnTidpjuKCuDfAq+mQzprLnw0H7Mhxps1ZwoUA2KmTMC52noChZShirWqZMZsbh
+tsKWdMECgYEA5VkuxwZeBNn6DKslqhkDTO0oEnns117hSxgZ9nq6FwEhTS+HTuzU
+TwVO5naD0O4xOYFXrH7DvPxFtufV3lyAeuUc0jPnpsBobwWCMra6ENyhxEh3ayV5
+DTSvHPvNCoXaxqfWSMPZhvfjF5v3kq5HzNLHN3DF0s8AzXhHhf7Y54sCgYEA0pPd
+WZxaqRI0GnBvtwN6yJk53ykzR5DgbP8cNV9770Y/vrLHbMvN/gzLljRDZFUrAXLf
+NJHyurYsx1fxc6cG8c51cxeM8vhWnPXthwDv4rtXHN9AamLX6tTLdYPnfdks0Qfv
+6oE1dK40AB+djF36WYNw79zOMOXVC5bqZxrb7B8CgYB1BGHHjkoeM5FPMWuQNB7o
++v+9HZRn9rMAe5WTmt6jqiHxndRtwow4nT66e7GZwk4/Ru0Sx8LbA+QWBIesYonz
+Kj7gSTdibz1Zl/fsJCsfO1MWMNstQftXb5ABO8BMJCuRvESq77JnGMc3Xo6cumtL
+6CdY9CMbAh8otrvXdEX7LQKBgD7FdSZRRXVAx+dZvPOBRgimJGoxjee3eC8FnRML
+85XQCxB9mpUD69PfXJDZ43z1Jmy4IXE6UHD3/UEvJfqjv541PS2hx5JmFOuVI8kq
+rleYIM+qfTk5XcPSyxOszkTliEaHZy0wdw7hHv8qbXx6RzaHyBK4b36EBI3/3r/9
+cbFhAoGAfc9OGTcM/Nps1zVPxMuBxfW9VxVJSlvo8nGeYDRGqysoj9h7xwuYK7zM
+L1NNccEyatJCWscN+nN5LdS6tg9oxgQvLv47p8WVD4Dl+Ow9Mes8rhev8OUkpBwe
+VsB0sql+OGeeTnfRIxfSzrTqmwP2D8yD3N0H0vHTgcGr9Koh8tk=
+-----END RSA PRIVATE KEY-----
+
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvKeg42T4bPvh1tjPXrwL
+QH34zy7KlDWtlHL2RGK4mGiV3f2VCViNvHJGfjTCUjypBGxN3hR32ubEBYeShfie
+VHljEPZwfJ80R0D2Z1OZRc/weQfhrqGFXCls+kvLiN0x45PDywZC3SmNyqJsLrvX
+7C3NcBUfSmOX3L0YjqsYtvkK4FrtO5j4h/sDxfdsPzKcQ3G54lGNLCU2h8JTeqIB
+ISAFysAxXitHxM03OfwGXet1KHojstAmtPz/CFJ8QRO0LT21qrzclMA9mzP6A13B
+MUmEwUMjpSqocLU7YCXEMEjC+4dBuoHWRXuEC4XKlPoiZMNY+RLNsDoAX3IpA6Et
+1QIDAQAB
+-----END PUBLIC KEY-----
+</pre>
+<h3>2.java加密解密代码</h3>
+<pre>
+package com.lizheblogs.server.utils;
+
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+/**
+ * Created by LiZhe on 2020-10-27.
+ * com.lizheblogs.server.utils
+ */
+@Component
+public class RSAEncrypt {
+
+    private static String privateKey;
+    private static String publicKey;
+
+    public RSAEncrypt() {
+        java.security.Security.addProvider(
+                new org.bouncycastle.jce.provider.BouncyCastleProvider()
+        );
+    }
+
+    @Value("${constants.private-key}")
+    public void setPrivateKey(String privateKey) {
+        RSAEncrypt.privateKey = privateKey;
+    }
+
+    @Value("${constants.public-key}")
+    public void setPublicKey(String publicKey) {
+        RSAEncrypt.publicKey = publicKey;
+    }
+
+    /**
+     * RSA公钥加密
+     * 对应解密方法：{@link RSAEncrypt#decryptPrivate(java.lang.String)}
+     *
+     * @param str 加密字符串
+     * @return 密文
+     * @throws Exception 加密过程中的异常信息
+     */
+    public static String encryptPublic(String str) throws Exception {
+        return encrypt(str, getRsaPublicKey());
+
+    }
+
+    /**
+     * RSA私钥解密
+     * 对应加密方法：{@link RSAEncrypt#encryptPublic(java.lang.String)}
+     *
+     * @param str 加密字符串
+     * @return 铭文
+     * @throws Exception 解密过程中的异常信息
+     */
+    public static String decryptPrivate(String str) throws Exception {
+        return decrypt(str, getRsaPrivateKey());
+    }
+
+    /**
+     * RSA私钥加密
+     * 对应解密方法：{@link RSAEncrypt#decryptPublic(java.lang.String)}
+     *
+     * @param str 加密字符串
+     * @return 密文
+     * @throws Exception 加密过程中的异常信息
+     */
+    public static String encryptPrivate(String str) throws Exception {
+        return encrypt(str, getRsaPrivateKey());
+    }
+
+    /**
+     * RSA公钥解密
+     * 对应加密方法：{@link RSAEncrypt#encryptPrivate(java.lang.String)}
+     *
+     * @param str 加密字符串
+     * @return 铭文
+     * @throws Exception 解密过程中的异常信息
+     */
+    public static String decryptPublic(String str) throws Exception {
+        return decrypt(str, getRsaPublicKey());
+
+    }
+
+    /**
+     * 解析私钥
+     *
+     * @return 私钥
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    private static RSAPrivateKey getRsaPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String privateKeyContent = privateKey.replaceAll("\\n", "")
+                .replace("-----BEGIN RSA PRIVATE KEY-----", "")
+                .replace("-----END RSA PRIVATE KEY-----", "");
+
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        PKCS8EncodedKeySpec keySpecPKCS8 = new PKCS8EncodedKeySpec(java.util.Base64.getDecoder().decode(privateKeyContent));
+        return (RSAPrivateKey) kf.generatePrivate(keySpecPKCS8);
+    }
+
+    /**
+     * 解析公钥
+     *
+     * @return 公钥
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    private static RSAPublicKey getRsaPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        //解析公钥
+        String publicKeyContent = publicKey.replaceAll("\\n", "")
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "");
+
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(java.util.Base64.getDecoder().decode(publicKeyContent));
+        return (RSAPublicKey) kf.generatePublic(keySpecX509);
+    }
+
+    /**
+     * 解密
+     *
+     * @param str 加密字符串
+     * @param key 密钥
+     * @return 文字
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
+    private static String decrypt(String str, Key key) throws NoSuchAlgorithmException,
+            NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        //64位解码加密后的字符串
+        byte[] inputByte = Base64.decodeBase64(str.getBytes(StandardCharsets.UTF_8));
+        //RSA解密
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        return new String(cipher.doFinal(inputByte));
+    }
+
+    /**
+     * 加密
+     *
+     * @param str 文字
+     * @param key 密钥
+     * @return 加密字符串
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
+    private static String encrypt(String str, Key key) throws NoSuchAlgorithmException,
+            NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        //RSA加密
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        return Base64.encodeBase64String(cipher.doFinal(str.getBytes(StandardCharsets.UTF_8)));
+    }
+}
+</pre>
+测试方法：
+<pre>
+String encrypt = RSAEncrypt.encryptPublic("pulqueli@gmail.com");
+System.out.println("====" + encrypt);
+String decrypt = RSAEncrypt.decryptPublic(encrypt);
+System.out.println("====" + decrypt);
+</pre>
+<br/>
+<br/>
+参考文献：<br/>
+<a target="_blank" href="https://blog.csdn.net/ls0111/article/details/77533768">
+https://blog.csdn.net/ls0111/article/details/77533768</a><br/>
+<a target="_blank" href="https://gist.github.com/destan/b708d11bd4f403506d6d5bb5fe6a82c5">
+https://gist.github.com/destan/b708d11bd4f403506d6d5bb5fe6a82c5</a><br/>
+<a target="_blank" href="https://blog.csdn.net/qy20115549/article/details/83105736">
+https://blog.csdn.net/qy20115549/article/details/83105736</a><br/>
+<a target="_blank" href="https://blog.csdn.net/lwz15071387627/article/details/88103997">
+https://blog.csdn.net/lwz15071387627/article/details/88103997</a><br/>
+<br/>
