@@ -12,10 +12,11 @@ title: "检查请求参数—Fiddler请求查看工具"
     很难知道客户端是怎样调用服务端接口的。<br/>
     比如，我是安卓开发者，苹果开发者已经对接了接口，请求没有问题，<br/>
     但是，我按照文档请求后结果不一样，这时就需要知道已对接的客户端<br/>
-    发了什么参数的请求，返回的结构是什么。
+    发了什么参数的请求，返回的结构是什么。<br/>
+    Fiddler通过简单的配置，就可以实现监听请求的内容和返回信息。
 </p>
 <h3>1.安装Progress Telerik Fiddler Web Debugger</h3>
-Progress Telerik Fiddler Web Debugger软件，可以获取客户端的请求和响应。<br/>
+Progress Telerik Fiddler Web Debugger 软件，可以获取客户端的请求和响应。<br/>
 这样请求参数是什么，更快地排查错误。<br/>
 安全问题：需要在客户端接入的网络进行配置，否则也是获取不到信息的。<br/>
 官网：<a target="_blank" href="https://www.telerik.com/fiddler">https://www.telerik.com/fiddler</a><br/>
@@ -23,13 +24,13 @@ Windows安装包下载：<br/>
 <a target="_blank" href="https://www.telerik.com/download/fiddler">https://www.telerik.com/download/fiddler</a>
 <br/>
 下载的是FiddlerSetup，Fiddler Classic。<br/>
-不是Fiddler Everywhere，Fiddler Everywhere应该也能实现相同功能。<br/>
+不是Fiddler Everywhere，Fiddler Everywhere 应该也能实现相同功能。<br/>
 但未测试过<br/>
 
 <h3>2.Fiddler设置</h3>
 Tools -> Options -> Connections -> <br/>
-Allow remote computers to connect勾选<br/>
-Fiddler listens on port是客户端网络设置代理的端口号。<br/>
+Allow remote computers to connect 勾选<br/>
+Fiddler listens on port 是客户端网络设置代理的端口号。<br/>
 
 <h3>3.Android设置</h3>
 在连接的WIFI设置中，勾选“显示高级选项”，代理是手动，<br/>
