@@ -1,0 +1,86 @@
+---
+layout: default
+title: "javaFx-桌面软件开发"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">18 Mar 2021</p>
+
+<p>
+	JavaFX 是一个开源的下一代客户端应用平台，<br/>
+	适用于基于Java构建的桌面、移动端和嵌入式系统。 <br/>
+	它是许多个人和公司的共同努力的成果，<br/>
+	目的是为开发丰富的客户端应用提供一个现代、高效、功能齐全的工具包。<br/>
+</p>
+<h3>官网</h3>
+<a target="_blank" href="https://openjfx.cn/">https://openjfx.cn/</a>
+
+<h3>视频教程</h3>
+<a target="_blank" href="https://space.bilibili.com/5096022/channel/detail?cid=16953">https://space.bilibili.com/5096022/channel/detail?cid=16953</a><br/>
+<h3>开发文档</h3>
+<a target="_blank" href="https://openjfx.cn/openjfx-docs/">https://openjfx.cn/openjfx-docs/</a>
+
+<h3>软件</h3>
+IntelliJ IDEA<br/>
+JavaFX SDK<br/>
+JDK<br/>
+
+<h3>Hello World</h3>
+<font color="pink">1.</font> IDEA -> File -> New -> Project -> Java FX，然后下一步到完成。<br/>
+<br/>
+<font color="pink">2.</font> File -> Project Structure -> Libraries <br/>
+and add the JavaFX 15 SDK as a library to the project. <br/>
+Point to the lib folder of the JavaFX SDK.<br/>
+选择javaFX下的lib目录。<br/>
+E:\javafx-sdk-11.0.2\lib<br/>
+<br/>
+<font color="pink">3.</font> Project Structure -> Project Setting -> <br/>
+Project -> Project language level -> 5<br/>
+<br/>
+<font color="pink">4.</font> Debug Configurations -> Main -> Use classpath of module -> untitled<br/>
+选一个运行的Module<br/>
+<br/>
+<font color="pink">5.</font> Main文件修改<br/>
+<pre>
+@Override
+public void start(Stage primaryStage) throws Exception{
+    AnchorPane ap = new AnchorPane();
+    ap.setStyle("-fx-background-color:#ffffff");
+    Scene scene = new Scene(ap);
+    primaryStage.setTitle("Hello World");
+    primaryStage.setScene(scene);
+    primaryStage.setWidth(800);
+    primaryStage.setHeight(800);
+    primaryStage.show();
+}
+</pre>
+<br/>
+<font color="pink">6.</font> 运行即可<br/>
+<br/>
+<h3>打包EXE文件</h3>
+<font color="pink">1.</font> File -> Project Structure -> Artifacts -> +<br/>
+ -> JavaFx Application<br/>
+<br/>
+<font color="pink">2.</font> 右侧第四个标签（Java FX）<br/>
+Application calss: sample.Main<br/>
+Native bundle: all<br/>
+<br/>
+<font color="pink">3.</font> 重新编译<br/>
+Build -> Build Artifacts -> rebuild<br/>
+<br/>
+<font color="pink">4.</font> 项目目录中找到EXE<br/>
+F:\test\untitled\out\artifacts\JavaFXApp\bundles\JavaFXApp<br/>
+<br/>
+<br/>
+参考教程：<br/>
+<br/>
+<a target="_blank" href="https://openjfx.cn/openjfx-docs/">
+            https://openjfx.cn/openjfx-docs/</a><br/>
+<br/>
+<a target="_blank" href="https://blog.csdn.net/qq_21455991/article/details/98078369">
+            https://blog.csdn.net/qq_21455991/article/details/98078369</a><br/>
+<br/>
+<a target="_blank" href="https://blog.csdn.net/wangyinlon/article/details/79247606">
+            https://blog.csdn.net/wangyinlon/article/details/79247606</a><br/>
+<br/>
