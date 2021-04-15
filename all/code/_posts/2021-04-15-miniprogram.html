@@ -1,0 +1,47 @@
+---
+layout: default
+title: "Jekyll同步微信小程序"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">15 Apr 2021</p>
+
+<p>
+	Jekyll是一个生成静态网页的工具，不需要数据库支持。<br/>
+    微信小程序，有自己的组件和API。<br/>
+    现在已经有了基于Jekyll的项目部署在Github上，<br/>
+    想经过简单的转换，把文章部署到微信小程序上。<br/>
+    核心思想是利用JS文件创建对象，保存数据，<br/>
+    在微信小程序上使用rich-text显示。<br/>
+</p>
+<h3>解决方案</h3>
+<h4>1.生成目录js文件</h4>
+先开发一个JAVA项目，遍历Jekyll中的静态网页，<br/>
+生成目录js文件，方便小程序调用。<br/>
+格式很简单，就是一个对象：<br/>
+<pre>
+let list_data_all = [json数据];
+module.exports = {list_data_all}
+</pre>
+对象中包含名称、日期、地址<br/>
+<h4>2.html文章转成js文件</h4>
+转换时，将标签的样式替换成class，<br/>
+以便小程序的富文本组件能识别。<br/>
+js文件结构：<br/>
+<pre>
+const htmlSnip = `html标签数据`
+module.exports = {htmlSnip}
+</pre>
+注意单引号很特别。<br/>
+图片地址可以使用github链接。<br/>
+<h4>3.小程序中添加js文件</h4>
+小程序通过引用js文件来获取数据并显示<br/>
+
+
+<h3>小程序官网文档</h3>
+<a target="_blank" href="https://developers.weixin.qq.com/miniprogram/dev/framework/">https://developers.weixin.qq.com/miniprogram/dev/framework/</a>
+
+
+<h3>微信小程序码</h3>
+<img src="/images/blogs/code/2021-04-15-miniprogram/gh_164ee9f9340c_258.jpg" width="240" alt="小程序码"/><br/>
