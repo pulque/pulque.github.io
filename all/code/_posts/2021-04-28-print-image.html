@@ -1,0 +1,303 @@
+---
+layout: default
+title: "热敏打印机图片打印ESC/POS指令"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">28 Apr 2021</p>
+
+<p>
+	这几天研究热敏打印机的打印指令，<br/>
+  通过蓝牙或接口，发送给打印机进行打印。<br/>
+  使用的是位图打印命令。<br/>
+  本问主要说明怎样将图片转换成指令。<br/>
+  适用于Android系统平台的代码。<br/>
+  <br/>
+  用360*360大小的Bitmap转成byte[]指令<br/>
+</p>
+<h3>指令说明</h3>
+ESC * 设定位图命令 <br/>
+格式： <br/>
+ ASCII： ESC * m n1 n2 d1..dk <br/>
+ DEC：   27 42 m n1 n2 d1..dk <br/>
+ HEX：   1B 2A m n1 n2 d1..dk <br/>
+注释： <br/>
+设定位图方式（用 m）、点数（用 n1 n2）以及位图内容（d1..dk）<br/>
+m=0，1，32，33，n1=0～ 255。n2=0～3。d=0～255。 <br/>
+k=n1+256×n2 (m=0，1) <br/>
+k=(n1+256×n2)×3 (m=32,33) <br/>
+水平方向点数为 n1+256×n2 <br/>
+m 用于选择位图方式。<br/>
+<br/>
+m  Mode       横向最多点数 <br/>
+0  8点单密度  n1+n2×256[不超过 288 点] <br/>
+1  8点双密度  n1+n2×256[不超过 576 点] <br/>
+32 24点单密度 （n1+n2×256）×3[不超过 288点] <br/>
+33 24点双密度 （n1+n2×256）×3[不超过 576点] <br/>
+<br/>
+注： <br/>
+1、 如果 m 值超出上面指定的范围，<br/>
+    n1以后的数据会被当作普通打印字符来打印。 <br/>
+2、 横向点数为 n1+256×n2。 <br/>
+3、 如果点数超过一行，超过其最大点数<br/>
+    （与选择的位图方式有关，详见上表）的部分被忽略。<br/>
+4、 d 代表图形数据。其中每个字节的某位为 1 的<br/>
+    时候打印出一点，为 0 的时候，为空白。 <br/>
+5、 打印数据超过 GS L 和 GS W 规定的打印区域的<br/>
+    时候，超出数据会被忽略。 <br/>
+6、 打印完图形模式后，打印机会回到字符打印模式。<br/>
+    但图形下打印速度较慢，所以一般要求<br/>
+    在打印字符前加 ESC @指令恢复速度设置。 <br/>
+7、 字符修饰指令，如强调、下划线、反转以及尺寸变化<br/>
+    等指令在图形模式下无效。对齐指令有效。<br/>
+<h3>转换代码</h3>
+<h4>1.将图片地址转Bitmap对象</h4>
+将图片缩放到360*360尺寸<br/>
+<pre>
+/**
+ * 通过图片地址获取图片对象
+ * @param path 图片地址
+ * @return Bitmap
+ */
+public static Bitmap getBitmap(String path) {
+    Bitmap bitmapTemp = BitmapFactory.decodeFile(path);
+    Bitmap bitmap = Bitmap.createScaledBitmap(
+            bitmapTemp, 360, 360, false);
+    // 如果没有缩放，那么不回收
+    if (bitmapTemp != bitmap) {
+        // 释放Bitmap的native像素数组
+        bitmapTemp.recycle(); 
+    }
+    return bitmap;
+}
+</pre>
+<h4>2.获取指令数组</h4>
+包含三个方法：<br/>
+2.1 图片生成指令组<br/>
+<pre>
+/**
+ * 用于打印360*360大小的图片
+ * 360 = 24 * 15
+ * 换行 10
+ * 0x68 = 104
+ * 360 = 0x68 + 0x01 * 256
+ * 16290 = （ 5 + 3 * 360 + 1 ） * 15
+ *
+ * @param bit 图片
+ * @return 打印指令
+ */
+public static byte[] draw2PxPoint360(Bitmap bit) {
+    byte[] data = new byte[16290];
+    int k = 0;
+    for (int j = 0; j < 15; j++) {
+        data[k++] = 0x1B;
+        data[k++] = 0x2A;
+        data[k++] = 33; //24点双密度打印，分辨率200DPI。
+        data[k++] = 0x68;
+        data[k++] = 0x01;
+        for (int i = 0; i < 360; i++) {
+            for (int m = 0; m < 3; m++) {
+                for (int n = 0; n < 8; n++) {
+                    //获取图片的灰度值
+                    byte b = px2Byte(i, 
+                             j * 24 + m * 8 + n, 
+                             bit);
+                    data[k] += data[k] + b;
+                }
+                k++;
+            }
+        }
+        //换行
+        data[k++] = 10;
+    }
+    return data;
+}
+</pre>
+2.2 像素转指令<br/>
+<pre>
+/**
+ * 图片二值化，黑色是1，白色是0
+ *
+ * @param x   横坐标
+ * @param y   纵坐标
+ * @param bit 位图
+ * @return 像素对应点数据
+ */
+public static byte px2Byte(int x, int y, Bitmap bit) {
+    byte b = 0;
+    int pixel = bit.getPixel(x, y);
+    int red = (pixel & 0x00ff0000) >> 16; // 取高两位
+    int green = (pixel & 0x0000ff00) >> 8; // 取中两位
+    int blue = pixel & 0x000000ff; // 取低两位
+    int gray = RGB2Gray(red, green, blue);
+    if (gray < 128) {
+        b = 1;
+    } else {
+        b = 0;
+    }
+    return b;
+}
+</pre>
+2.3 图片灰度的转化<br/>
+<pre>
+/**
+ * 图片灰度的转化
+ *
+ * @param r 红
+ * @param g 绿
+ * @param b 蓝
+ * @return 灰度值
+ */
+private static int RGB2Gray(int r, int g, int b) {
+    return (int) (0.29900 * r + 0.58700 * g + 0.11400 * b);
+}
+</pre>
+<h4>3.完整打印指令</h4>
+有些冗余指令，可根据效果调整。<br/>
+3.1 复位打印机<br/>
+<pre>
+  new byte[]{0x1B, 0x40};
+</pre>
+3.2 开始打印图片<br/>
+1B,40 初始化打印机<br/>
+1B,33 设定 n/180 英寸行间距<br/>
+<pre>
+  new byte[]{0x00, 0x1B, 0x40, 0x1B, 0x33, 0x00};
+</pre>
+3.3 设置居中<br/>
+<pre>
+  new byte[]{0x1b, 0x61, 0x31};
+</pre>
+3.4 打印图片指令<br/>
+<pre>
+  byte[] command = draw2PxPoint360(bitmap);
+</pre>
+3.5 结束打印图片<br/>
+设置左边距<br/>
+<pre>
+  new byte[]{0x1d, 0x4c, 0x1f, 0x00};
+</pre>
+3.6 换行<br/>
+<pre>
+  new byte[]{10};
+</pre>
+<h4>4.并排打印图片</h4>
+因为小票纸宽的问题<br/>
+把图片缩放到192*192<br/>
+80mm宽纸最多可以打印3张<br/>
+58mm宽纸可以打印2张<br/>
+<pre>
+public static byte[] draw2PxPoint(
+                     Bitmap bit1, Bitmap bit2) {
+    byte[] data = new byte[9264];
+    int k = 0;
+    for (int j = 0; j < 8; j++) {
+        data[k++] = 0x1B;
+        data[k++] = 0x2A;
+        data[k++] = 33; //24点双密度打印
+        data[k++] = (byte) (128 & 0xFF);
+        data[k++] = 0x01;
+        for (int i = 0; i < 192; i++) {
+            for (int m = 0; m < 3; m++) {
+                for (int n = 0; n < 8; n++) {
+                    byte b = px2Byte(i,
+                            j * 24 + m * 8 + n, bit1);
+                    data[k] += data[k] + b;
+                }
+                k++;
+            }
+        }
+        for (int i = 0; i < 192; i++) {
+            for (int m = 0; m < 3; m++) {
+                for (int n = 0; n < 8; n++) {
+                    byte b = px2Byte(i,
+                            j * 24 + m * 8 + n, bit2);
+                    data[k] += data[k] + b;
+                }
+                k++;
+            }
+        }
+        data[k++] = 10;
+    }
+    return data;
+}
+</pre>
+<h4>5.图片转换说明</h4>
+图片的颜色标准为RGB，例如：#00ff00<br/>
+即红绿蓝，根据算法转换成一个灰度值<br/>
+判断灰度值大于128，<br/>
+就是打印机上的一个黑点，用1标识<br/>
+否则就是空白，用0标识<br/>
+<br/>
+用24点双密度的模式去打印图片<br/>
+一个byte有8位，3个8位就是24点<br/>
+打印机横向滑行一次，一列上可以打印24个点<br/>
+<br/>
+<br/>
+宽360px，高360px的图片<br/>
+<br/>
+图片上有360行像素点<br/>
+第一列的8行像素点可以放一个byte<br/>
+第一列的9到16行可以放第二个byte<br/>
+第一列的17到24行可以放第三个byte<br/>
+3个byte在打印机上可以打印一次<br/>
+然后在像右移动一列，打印3个byte<br/>
+就是第二列的前24行<br/>
+<br/>
+所以将图片分成360列15行组，<br/>
+一行组有24个像素点数据（3个byte）<br/>
+对于byte数组，就有360*3列15行<br/>
+<br/>
+例如：<br/>
+360*360图片<br/>
+行是15，列是360<br/>
+像素点 360 * 360 =（ 3 * 8 * 15 ）* 360<br/>
+byte 360 * 360 / 8 = 15 * 360 * 3<br/>
+<br/>
+192*192图片<br/>
+行是8，列是192<br/>
+像素点 192 * 192 =（ 3 * 8 * 8 ）* 192<br/>
+byte 192 * 192 / 8 = 8 * 360 * 3<br/>
+<h4>6.常用打印指令</h4>
+6.1 复位<br/>
+<pre>
+  new byte[]{0x1B, 0x40};
+</pre>
+6.2 居中<br/>
+<pre>
+  new byte[]{0x1b, 0x61, 0x01};
+</pre>
+6.3 居左<br/>
+<pre>
+  new byte[]{0x1b, 0x61, 0x00};
+</pre>
+6.4 普通大小<br/>
+<pre>
+  new byte[]{0x1d, 0x21, 0x00};
+</pre>
+6.5 加高<br/>
+<pre>
+  new byte[]{0x1d, 0x21, 0x01};
+</pre>
+6.6 字体加粗<br/>
+<pre>
+  new byte[]{0x1b, 0x45, 0x01};
+</pre>
+6.7 取消字体加粗<br/>
+<pre>
+  new byte[]{0x1b, 0x45, 0x00};
+</pre>
+6.8 换行<br/>
+<pre>
+  new byte[]{10};
+</pre>
+参考文献：<br/>
+<br/>
+MCP-58系列用户手册.pdf<br/>
+打印机编程手册ESC指令.pdf<br/>
+<a target="_blank" href="https://blog.csdn.net/bzdwdmzjsmff/article/details/51325718">
+            https://blog.csdn.net/bzdwdmzjsmff/article/details/51325718</a><br/>
+<a target="_blank" href="https://blog.csdn.net/qq_34942689/article/details/72820226?locationNum=3&fps=1">
+            https://blog.csdn.net/qq_34942689/article/details/72820226?locationNum=3&fps=1</a><br/>
+<br/>
