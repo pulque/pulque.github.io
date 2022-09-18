@@ -1,0 +1,58 @@
+---
+layout: default
+title: "Git同时推送多个远程仓库"
+---
+
+<h2>{{ page.title }}</h2>
+
+<p class="publish_date">18 Sep 2022</p>
+
+需求：<br/>
+用于备份代码使用，从一个远程仓库拉去代码，<br/>
+提交的时候，同时提到两个远程仓库。<br/>
+
+<h3>建立远程仓库</h3>
+
+<h4>登录远程设备</h4>
+ssh [管理员用户名]@[IP地址或主机名] -p [SSH的端口号]<br/>
+输入密码即可<br/>
+
+<h4>建立仓库</h4>
+新建仓库文件夹：mkdir github.git<br/>
+进入文件夹：cd github.git<br/>
+初始化仓库：git init --bare<br/>
+
+<h4>获取仓库地址</h4>
+仓库地址：<br/>
+ssh://[管理员用户名]@[IP地址或主机名]:[SSH的端口号]/volume1/github/github.git<br/>
+<br/>
+git clone 仓库地址<br/>
+
+<h3>增加远程仓库</h3>
+
+<h4>查看远程仓库地址</h4>
+git remote -v<br/>
+
+<h4>增加地址：</h4>
+git remote set-url --add origin [仓库地址]<br/>
+
+<h4>提交代码：</h4>
+git push -u origin master<br/>
+
+<h3>其他相关命令</h3>
+
+<h4>删除远程仓库</h4>
+git remote rm [name] 
+
+<h4>修改仓库名</h4>
+git remote rename [old_name] [new_name] 
+
+
+<br/>
+<br/>
+参考教程：<br/>
+<a target="_blank" href="https://www.runoob.com/git/git-remote.html">
+            https://www.runoob.com/git/git-remote.html</a><br/>
+<a target="_blank" href="https://zhuanlan.zhihu.com/p/141941373">
+            https://zhuanlan.zhihu.com/p/141941373</a><br/>
+<br/>
